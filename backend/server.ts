@@ -11,7 +11,8 @@ app.get('/', (_, res) => {
     res.send('WebSocket server is running');
 });
 
-const PORT = 3020;
+const PORT = import.meta.env.PORT || 3010;
+
 
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
