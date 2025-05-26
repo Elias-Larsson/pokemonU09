@@ -1,0 +1,18 @@
+import express, { Express } from 'express';
+import http from 'http';
+import { WebSocketServer, WebSocket } from 'ws';
+
+const app: Express = express();
+
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+app.get('/', (_, res) => {
+    res.send('WebSocket server is running');
+});
+
+const PORT = 3020;
+
+server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
