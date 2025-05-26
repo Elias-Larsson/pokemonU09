@@ -1,0 +1,24 @@
+{
+  "name": "u09",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "turbo": "^2.5.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "packageManager": "bun@1.2.13",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "backend",
+    "frontend"
+  ],
+  "module": "index.ts",
+  "type": "module"
+}
