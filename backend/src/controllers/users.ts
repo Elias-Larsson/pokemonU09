@@ -51,3 +51,24 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
     }
   }
 };
+
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
+
+    try {
+        const user = await User.findById(req.params.id);
+        if(!user) {
+          res.status(404).json({message:"Could not find user!"})
+          return;
+        }
+  
+        if(req.body.username) user.name = req.body.username;
+        if (req.body.email) user.email = req.body.email;
+        if (req.body.password) {
+        }
+      
+        await user.save()
+        res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Could not fetch user! " });
+    } 
+  };
