@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+const MONGODB_URI= import.meta.env.MONGODB_URI as string;
+
+
 async function connectDB() {
   try {
     const URL = process.env.MONGODB_URI || "";
