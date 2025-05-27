@@ -1,6 +1,8 @@
 import express, { type Express } from 'express';
 import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
+import mongoose from "mongoose";
+import connectDB from './db';
 
 const app: Express = express();
 
@@ -12,8 +14,10 @@ app.get('/', (_, res) => {
 });
 
 const PORT = import.meta.env.PORT || 3010;
-
+connectDB();
 
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
+
+
