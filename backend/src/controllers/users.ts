@@ -51,3 +51,11 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
     }
   }
 };
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+    const  userid  = req.params.id;
+   
+    const deleteUser = await User.findByIdAndDelete(userid);
+    console.log(deleteUser);
+    res.json(deleteUser);
+  };
