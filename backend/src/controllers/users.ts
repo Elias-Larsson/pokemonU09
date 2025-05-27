@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import User from "../models/user";
 
+
 export const createUser = async (req: Request, res: Response): Promise<void> => {
     try{
         const { name, email, password } = req.body;
@@ -22,3 +23,17 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         }
     }
 }
+
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
+    const { getUsers } = req.body;
+    try {
+      const limit = parseInt(req.query.limit as string) || 0; 
+      const users = await User.find(getUsers).limit(limit);
+      res.json(users);
+    } catch (error){
+    if(error instanceof Error){
+      res.status(500).json({ message: "error, could not find users!" });
+    }
+    }
+  };
+
