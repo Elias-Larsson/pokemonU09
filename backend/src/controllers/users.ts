@@ -64,6 +64,8 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
         if(req.body.username) user.name = req.body.username;
         if (req.body.email) user.email = req.body.email;
         if (req.body.password) {
+            const salt = await bcrypt.genSalt();
+            user.password = await bcrypt.hash(req.body.password, salt);
         }
       
         await user.save()
