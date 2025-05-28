@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 import User from "../models/user";
+import bcrypt from "bcrypt";
+
 
 export const createUser = async (
   req: Request,
