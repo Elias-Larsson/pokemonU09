@@ -40,7 +40,10 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const getUserById = async (req: Request, res: Response): Promise<void> => {
+export const getUserById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) res.status(404).json({ message: "User not found! " });
@@ -52,10 +55,15 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-export const deleteUser = async (req: Request, res: Response): Promise<void> => {
-    const  userid  = req.params.id;
-   
+export const deleteUser = async (req: Request,res: Response): Promise<void> => {
+  try {
+    const userid = req.params.id;
     const deleteUser = await User.findByIdAndDelete(userid);
     console.log(deleteUser);
     res.json(deleteUser);
-  };
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ message: "Could not delete user!" });
+    }
+  }
+};
