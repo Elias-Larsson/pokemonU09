@@ -20,5 +20,9 @@
     "frontend"
   ],
   "module": "index.ts",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@types/cors": "^2.8.18",
+    "cors": "^2.8.5"
+  }
 }
