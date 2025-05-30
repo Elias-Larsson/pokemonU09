@@ -3,3 +3,10 @@
 body {
     font-family: 'Pixelify Sans', sans-serif;
 }
+
+@theme {
+    --color-primary-red: #DA5754;
+    --color-secondary-red: #A82522;
+    --color-primary-yellow: #F4C722;
+    --color-secondary-yellow: #BB8E00       ;
+}
