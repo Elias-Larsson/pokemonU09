@@ -12,23 +12,23 @@ export const router = createBrowserRouter([
     element: < SplashScreen/>,
   },
   {
-    path: '/',
+    path: '/profile',
     element: < Profile/>,
   },
   {
-    path: '/',
+    path: '/home',
     element: < Home/>,
   },
   {
-    path: '/',
+    path: '/editprofile',
     element: < EditProfile/>,
   },
   {
-    path: '/',
+    path: '/battlesetup',
     element: < BattleSetup/>,
   },
     {
-    path: '/',
+    path: '/battle',
     element: < Battle/>,
   },
 ])
