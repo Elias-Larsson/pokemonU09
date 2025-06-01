@@ -10,9 +10,9 @@ export const Button = ({name, color, route}: Props) => {
     return (
         <Link
         to={route}
-        className = {color === "red" ? "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" :
-        color === "yellow" ? "bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" :
-        "bg-white hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded"
+        className = {color === "red" ? "bg-primary-red hover:bg-secondary-red font-bold py-2 px-4 border-secondary-red border-b-3 border-r-3" :
+        color === "yellow" ? "bg-primary-yellow hover:bg-secondary-yellow font-bold py-2 px-4  border-secondary-yellow border-b-3 border-r-3" :
+        "bg-white hover:bg-gray-200 font-bold py-2 px-4  border-gray-200 border-b-3 border-r-3"
         }>
         {name}
         </Link>
