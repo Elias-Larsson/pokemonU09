@@ -5,6 +5,7 @@ import { Home } from "./pages/home"
 import { EditProfile } from "./pages/editprofile"
 import { BattleSetup } from "./pages/battlesetup"
 import { Battle } from "./pages/battle"
+import { PokeSearch } from "./pages/pokeSearch"
 
 export const router = createBrowserRouter([
   {
@@ -31,4 +32,8 @@ export const router = createBrowserRouter([
     path: '/battle',
     element: < Battle/>,
   },
+  {
+    path: '/searchPokemon',
+    element: < PokeSearch/>,
+  }
 ])
