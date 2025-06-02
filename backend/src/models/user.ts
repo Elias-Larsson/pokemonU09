@@ -11,13 +11,10 @@ export const userSchema = new mongoose.Schema(
     favoritePakaman: { type: String, default: null },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-const User = mongoose.model(
-  "User", 
-  userSchema
-);
+const User = mongoose.model("User", userSchema);
 
 export default User;

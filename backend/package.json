@@ -13,10 +13,18 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/express-session": "^1.18.1",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.16", 
     "bcrypt": "^6.0.0",
+    "connect-mongo": "^5.1.0",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
+    "express-session": "^1.18.1",
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "ws": "^8.18.2"
   },
   "devDependencies": {
