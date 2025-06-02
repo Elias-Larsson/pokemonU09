@@ -14,6 +14,14 @@ const app: Express = express();
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
+app.use (express.json());
+
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL! || "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);	
 
 const mongooose = require("mongoose")
 
