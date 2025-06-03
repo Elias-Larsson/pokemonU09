@@ -5,6 +5,7 @@ import cors from "cors";
 import connectDB from './db';
 import userRouter from './src/routes/routes';
 import "./src/middleware/oauthpassword"
+import authRouter from './src/routes/authRouter';
 
 
 
@@ -20,6 +21,7 @@ app.use(
   cors({
     origin: [process.env.CLIENT_URL! || "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );	
 
@@ -34,13 +36,6 @@ const session = require ("express-session")
 const MongoStore = require("connect-mongo");
 
 
-app.use(
-  cors({
-    origin: [process.env.CLIENT_URL! || "http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-  })
-);
 
 app.use(session({
   secret: "secret",
@@ -48,6 +43,9 @@ app.use(session({
   saveUninitialized: false, 
   store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI! }),
 }));
+
+app.use("/auth", authRouter); 
+app.use("/users", userRouter);
 
 app.use(passport.initialize());
 app.use(passport.session());
