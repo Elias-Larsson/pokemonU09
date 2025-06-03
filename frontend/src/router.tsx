@@ -5,6 +5,7 @@ import { Home } from "./pages/home"
 import { EditProfile } from "./pages/editprofile"
 import { BattleSetup } from "./pages/battlesetup"
 import { Battle } from "./pages/battle"
+import { Login } from "./pages/login"
 
 export const router = createBrowserRouter([
   {
@@ -30,5 +31,9 @@ export const router = createBrowserRouter([
     {
     path: '/battle',
     element: < Battle/>,
+  },
+  {
+    path: '/login',
+    element: < Login/>,
   },
 ])
