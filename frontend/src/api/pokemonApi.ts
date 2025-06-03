@@ -7,3 +7,10 @@ export const getPokemons = (apiURL: string) => {
   return axios.get(apiURL);
 };
 
+export const getPokemonByName = (apiURL: string, pokemon: string) => {
+  return axios.get(`${apiURL}/${pokemon}`).then((response) => {
+    console.log(response.data);
+    return response.data;
+  });
+}
+

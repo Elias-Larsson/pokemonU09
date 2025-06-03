@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 body {
-    font-family: 'Pixelify Sans', sans-serif;
+    font-family: "VT323", monospace;
+    font-size: larger;
 }
 
 @theme {
