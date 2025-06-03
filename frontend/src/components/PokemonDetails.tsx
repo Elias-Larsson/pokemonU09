@@ -1,5 +1,29 @@
+interface PokemonStat {
+  base_stat: number;
+  stat: {
+    name: string;
+  };
+}
+
+interface PokemonType {
+  type: {
+    name: string;
+  };
+}
+
+interface PokemonSprites {
+  front_default: string;
+}
+
+interface Pokemon {
+  name: string;
+  sprites: PokemonSprites;
+  types: PokemonType[];
+  stats: PokemonStat[];
+}
+
 interface Props {
-  pokemon: any;
+  pokemon: Pokemon;
 }
 
 export default function PokemonDetails({ pokemon }: Props) {
@@ -8,7 +32,7 @@ export default function PokemonDetails({ pokemon }: Props) {
   return (
     <div className="bg-orange-50 rounded shadow p-4 mt-4 w-full max-w-md">
       <div className="flex justify-center items-center">
-      <h2 className="text-xl font-bold capitalize">{pokemon.name}</h2>
+        <h2 className="text-xl font-bold capitalize">{pokemon.name}</h2>
       </div>
       <div className="flex justify-center items-center">
         <img src={pokemon.sprites.front_default} alt={pokemon.name} />
@@ -17,7 +41,7 @@ export default function PokemonDetails({ pokemon }: Props) {
 
       <h3 className="mt-4 font-semibold">Stats:</h3>
       <ul>
-        {pokemon.stats.map((stat: any) => (
+        {pokemon.stats.map((stat) => (
           <li key={stat.stat.name} className="flex justify-between">
             <span>{stat.stat.name}</span>
             <span>{stat.base_stat}</span>
