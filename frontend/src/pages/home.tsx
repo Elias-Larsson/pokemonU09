@@ -7,8 +7,8 @@ export const Home = () => {
          >
                 <img src="/rocketlogo.png" alt="Logo" className="w-96" />
             <section className="flex flex-col text-center gap-y-2">
-                <Button name="Play" color="red" route="/battlsetup" />
-                <Button name="Profile" color="white" route="/profile" />
+                <Button buttonType="link" name="Play" color="red" route="/battlesetup" />
+                <Button buttonType="link" name="Profile" color="white" route="/profile" />
             </section>
         </div>
     );
