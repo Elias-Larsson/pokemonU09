@@ -5,6 +5,8 @@ import cors from "cors";
 import connectDB from './db';
 import userRouter from './src/routes/routes';
 import "./src/middleware/oauthpassword"
+import authRouter from './src/routes/authRouter';
+
 
 
 
@@ -20,6 +22,7 @@ app.use(
   cors({
     origin: [process.env.CLIENT_URL! || "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );	
 
@@ -34,20 +37,21 @@ const session = require ("express-session")
 const MongoStore = require("connect-mongo");
 
 
+
 app.use(
-  cors({
-    origin: [process.env.CLIENT_URL! || "http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI! }),
+    cookie: {
+      maxAge: 12 * 60 * 60 * 1000,
+    },
   })
 );
 
-app.use(session({
-  secret: "secret",
-  resave: false,
-  saveUninitialized: false, 
-  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI! }),
-}));
+app.use("/auth", authRouter); 
+app.use("/users", userRouter);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -70,7 +74,6 @@ app.get("/auth/logout", (req, res)=> {
   })
 })
 
-// kanske "GoogleUser"
 app.get("/api/googleUser", (req, res)=>{
   if (req.isAuthenticated()){
     res.json(req.user);
@@ -79,11 +82,8 @@ app.get("/api/googleUser", (req, res)=>{
   }
 });
 
-
-
 app.use (express.json());
 	
-
 app.get('/', (_, res) => {
     res.send('WebSocket server is running');
 });
@@ -94,7 +94,6 @@ app.use("/users", userRouter);
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
-
 
 function next(err: any): void {
   throw new Error('Function not implemented.');

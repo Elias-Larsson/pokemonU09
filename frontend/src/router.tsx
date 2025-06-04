@@ -36,7 +36,8 @@ export const router = createBrowserRouter([
   {
     path: '/searchPokemon',
     element: < PokeSearch/>,
-  }
+  },
+  {
     path: '/login',
     element: < Login/>,
   },
