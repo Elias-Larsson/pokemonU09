@@ -13,3 +13,4 @@ export const getPokemonByName = (apiURL: string, pokemon: string) => {
     return response.data;
   });
 }
+
