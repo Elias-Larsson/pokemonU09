@@ -1,5 +1,42 @@
-export const Login = () => {
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../components/button";
+import axios from "axios";
 
-    return <div>Login Page</div>;
-  
+export const Login = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        await axios.get("http://localhost:3020/api/googleUser", {
+          withCredentials: true,
+        });
+        navigate("/home");
+      } catch (error: unknown) {
+        console.error("Couldnt get user");
+      }
+    };
+    checkLogin();
+  }, [navigate]);
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:3020/auth/google";
   };
+
+
+  return (
+    <div className="flex items-center justify-center min-h-screen px-4">
+      <div className="w-full max-w-sm border border-gray-300 rounded-xl shadow-lg p-8 text-center">
+        <h1>Log in</h1>
+
+        <Button
+          name="Log in with Google"
+          color="red"
+          buttonType="click"
+          onClick={handleGoogleLogin}
+        />
+      </div>
+    </div>
+  );
+};
