@@ -71,3 +71,28 @@ export const deleteAccount = async (
     }
   }
 };
+
+export const incrementVictory = async (req: Request, res: Response): Promise<void> => {
+  
+  try { 
+     if (!req.isAuthenticated() || !req.user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const userId = (req.user as googleUserType)._id;
+
+    const user = await GoogleUser.findByIdAndUpdate(
+      userId,
+      { $inc: { victoryCount: 1 } },
+      { new: true }
+    );
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.json({messsage: "hey" });
+  } catch (error) {
+    console.error("incrementVictory error:", error); 
+    res.status(500).json({ message: "Could not increment victory count"});
+  }
+};

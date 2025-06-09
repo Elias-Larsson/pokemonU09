@@ -50,11 +50,12 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("/auth", authRouter); 
 app.use("/users", userRouter);
 
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.get("/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
