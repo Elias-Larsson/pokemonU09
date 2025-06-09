@@ -4,6 +4,7 @@ import { Button } from "../components/button";
 import axios from "axios";
 
 export const Home = () => {
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,3 +31,4 @@ export const Home = () => {
     </div>
   );
 };
+
