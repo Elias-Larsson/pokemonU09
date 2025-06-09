@@ -4,6 +4,7 @@ import { Button } from "../components/button";
 import { UserPokemon } from "../components/pokemon";
 import type { PokemonData } from "../components/types/pokemondata";
 import { RenderLifeBar } from "../components/battlelifebar";
+import axios from "axios";
 
 export const BattleSetup = () => {
   const [displayPokemon, setDisplayPokemon] = useState<PokemonData | null>(null);
@@ -12,6 +13,7 @@ export const BattleSetup = () => {
   const [randomPokemonHp, setRandomPokemonHp] = useState<number>(0);
   const [startBattle, setStartBattle] = useState<boolean>(false);
   const [userPokemonList, setUserPokemonList] = useState<PokemonData[]>([]);
+  const [attacklogs, setAttacklogs] = useState<string[]>([]);
   const pokemonNames = [
     "pikachu", 
     "bulbasaur",
@@ -19,6 +21,15 @@ export const BattleSetup = () => {
     "squirtle",
     "jigglypuff",
   ];
+
+  const battleLogScrollClass = `
+  max-h-100 overflow-y-auto
+  [&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-track]:bg-primary-dark
+  [&::-webkit-scrollbar-thumb]:bg-gray-100
+  dark:[&::-webkit-scrollbar-track]:bg-primary-dark
+  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700
+`;
 
   useEffect(() => {
     const fetchPokemon = async () => {
@@ -36,17 +47,39 @@ export const BattleSetup = () => {
     fetchPokemon();
   }, []);
 
-  const UserAttack = () => {
-    setRandomPokemonHp((hp) => Math.max(0, hp - 10));
-    console.log("Attacking the random Pokémon!", randomPokemonHp);
+  if (!userPokemonList.length || !randomPokemon) return <div>No Pokémon found.</div>;
+
+ const addLog = (log: string) => {
+  setAttacklogs((logs) => [...logs, log]);
+  };
+   
+  const OpponentAttack = () => {
+    setDisplayPokemonHp((hp) => Math.max(0, hp - 2));
+    addLog(`${randomPokemon.name} is attacking! ${displayPokemonHp}`);
+
+  }
+  const UserAttack = async () => {
+    setRandomPokemonHp((hp) => Math.max(0, hp - 100));
+    addLog(`Attacking the random Pokémon! ${randomPokemonHp}`);
+    if (randomPokemonHp <= 0) {
+      addLog(`You win!`)
+      try {
+        await axios.put(
+        "http://localhost:3020/auth/victory", // Adjust port/path as needed
+        {},
+        { withCredentials: true }
+        );
+      } catch (err) {
+        addLog("Failed to update victory count.");
+        console.log(err)
+      }
+    }
+    setTimeout(() => {
+      OpponentAttack()
+    }, 1000)
+
   };
 
-   if(randomPokemonHp <=0 ) {
-      console.log(`You win!`);
-      return <div>You WIN!</div>
-    }
-
-  if (!userPokemonList.length || !randomPokemon) return <div>No Pokémon found.</div>;
 
   return (
     <main className="bg-primary-dark overflow-auto h-screen flex items-center justify-center flex-col">
@@ -54,7 +87,7 @@ export const BattleSetup = () => {
         <div className="flex flex-col items-center justify-center mb-2">
           <>
             <img src={displayPokemon?.sprites.back_default} className="w-48" />
-            <RenderLifeBar pokemon={displayPokemon} hp={displayPokemonHp} />
+            <RenderLifeBar pokemon={displayPokemon || randomPokemon} hp={displayPokemonHp} />
           </>
         </div>
         {startBattle && (
@@ -90,6 +123,7 @@ export const BattleSetup = () => {
       )}
 
       {startBattle && (
+        <>
         <div className="flex justify-center items-center m-4">
           <Button
             buttonType="click"
@@ -98,10 +132,20 @@ export const BattleSetup = () => {
             onClick={UserAttack}
           />
         </div>
+        <div className="text-white flex flex-col ">
+        <h1 className="text-3xl text-center">--- Battle log ---</h1>
+          <ul className={`flex flex-col h-36 w-96 overflow-y-scroll ${battleLogScrollClass} battlog`}>
+              <li>
+                first attack! 10 damage... <br/>
+                ---
+              </li>
+                {attacklogs.map((log, idx) => (
+                  <li key={idx}>{log}</li>
+                ))}
+          </ul>
+        </div>
+        </>
       )}
     </main>
   );
 };
-
-import type { PokemonData } from "./types/pokemondata"
-
