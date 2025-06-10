@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPokemonByName, URL } from "../api/pokemonApi";
+import { getPokemonByName, incrementDefeat, incrementVictory, URL } from "../api/pokemonApi";
 import { Button } from "../components/button";
 import { UserPokemon } from "../components/pokemon";
 import type { PokemonData } from "../components/types/pokemondata";
@@ -57,36 +57,16 @@ export const BattleSetup = () => {
     setDisplayPokemonHp((hp) => Math.max(0, hp - 200));
     addLog(`${randomPokemon.name} is attacking! ${displayPokemonHp}`);
         if (displayPokemonHp <= 0) {
+      await incrementDefeat();
       addLog(`You lost to ${randomPokemon.name}!`)
-      try {
-        await axios.put(
-        "http://localhost:3020/auth/defeat", // Adjust port/path as needed
-        {},
-        { withCredentials: true }
-        );
-        return;
-      } catch (err) {
-        addLog("Failed to update defeat count.");
-        console.log(err)
-      }
     }
   }
   const UserAttack = async () => {
-    setRandomPokemonHp((hp) => Math.max(0, hp - 1));
+    setRandomPokemonHp((hp) => Math.max(0, hp - 2));
     addLog(`Attacking the random Pokémon! ${randomPokemonHp}`);
     if (randomPokemonHp <= 0) {
+      await incrementVictory();
       addLog(`You win!`)
-      try {
-        await axios.put(
-        "http://localhost:3020/auth/victory", // Adjust port/path as needed
-        {},
-        { withCredentials: true }
-        );
-        return;
-      } catch (err) {
-        addLog("Failed to update victory count.");
-        console.log(err)
-      }
     }
     setTimeout(() => {
       OpponentAttack()
