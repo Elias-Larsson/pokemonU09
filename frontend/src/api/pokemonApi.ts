@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const URL = "https://pokeapi.co/api/v2/pokemon";
-export const GET_POKEMONS = `${URL}?limit=150`;
+export const GET_POKEMONS = `${URL}?limit=1350`;
 
 export const getPokemons = async (apiURL: string) => {
   const res = await axios.get(apiURL);

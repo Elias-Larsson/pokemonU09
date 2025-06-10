@@ -8,8 +8,6 @@ import "./src/middleware/oauthpassword"
 import authRouter from './src/routes/authRouter';
 
 
-
-
 connectDB();
 const PORT = import.meta.env.PORT || 3010;
 const app: Express = express();
@@ -96,7 +94,6 @@ server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
 
-function next(err: any): void {
+function next(err: unknown) {
   throw new Error('Function not implemented.');
 }
-

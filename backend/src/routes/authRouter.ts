@@ -3,7 +3,7 @@ import { setUsername, deleteAccount, incrementVictory, incrementDefeat } from ".
 
 const authRouter = express.Router();
 
-authRouter.patch("/username", setUsername);
+authRouter.put("/username", setUsername);
 authRouter.delete("/account", deleteAccount);
 authRouter.put("/victory", incrementVictory);
 authRouter.put("/defeat", incrementDefeat);
