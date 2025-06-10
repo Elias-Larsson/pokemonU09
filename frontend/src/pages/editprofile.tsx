@@ -6,7 +6,9 @@ export const EditProfile = () => {
   const [username, setUsername] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [actionType, setActionType] = useState<"update" | "delete" | null>(null,);
+  const [actionType, setActionType] = useState<"update" | "delete" | null>(
+    null,
+  );
 
   const handleUpdate = async () => {
     setActionType("update");
@@ -23,11 +25,13 @@ export const EditProfile = () => {
     if (actionType === "update") {
       try {
         await axios.put(
-          "http://localhost:3020/auth/username",{ username },
+          "http://localhost:3020/auth/username",
+          { username },
           { withCredentials: true },
         );
         setMessage("Username updated.");
-      } catch (error) {const err = error as AxiosError<{ message: string }>;
+      } catch (error) {
+        const err = error as AxiosError<{ message: string }>;
         setMessage(err.response?.data?.message ?? "Update failed.");
       }
     } else if (actionType === "delete") {
@@ -36,7 +40,9 @@ export const EditProfile = () => {
           withCredentials: true,
         });
         setMessage("Account deleted.");
-        setTimeout(() => { window.location.href = "/";}, 1500);
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1500);
       } catch (error) {
         const err = error as AxiosError<{ message: string }>;
         setMessage(err.response?.data?.message ?? "Delete failed.");
@@ -65,9 +71,16 @@ export const EditProfile = () => {
 
       <div className="w-64 text-center space-x-4">
         <Button
-          name="Update" color="yellow" buttonType="click" onClick={handleUpdate}
+          name="Update"
+          color="yellow"
+          buttonType="click"
+          onClick={handleUpdate}
         />
-        <Button name="Delete" color="red" buttonType="click" onClick={handleDelete}
+        <Button
+          name="Delete"
+          color="red"
+          buttonType="click"
+          onClick={handleDelete}
         />
       </div>
       {message && <p className="mt-4 font-pixel text-black">{message}</p>}
@@ -82,9 +95,16 @@ export const EditProfile = () => {
             </p>
             <div className="flex justify-center space-x-4">
               <Button
-                name="Confirm" color="red" buttonType="click" onClick={confirmAction}
+                name="Confirm"
+                color="red"
+                buttonType="click"
+                onClick={confirmAction}
               />
-              <Button name="Cancel" color="yellow" buttonType="click" onClick={cancelAction}
+              <Button
+                name="Cancel"
+                color="yellow"
+                buttonType="click"
+                onClick={cancelAction}
               />
             </div>
           </div>
