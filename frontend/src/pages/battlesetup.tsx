@@ -4,7 +4,7 @@ import { Button } from "../components/button";
 import { UserPokemon } from "../components/pokemon";
 import type { PokemonData } from "../components/types/pokemondata";
 import { RenderLifeBar } from "../components/battlelifebar";
-import axios from "axios";
+import { Battlelog } from "../components/battlelog";
 
 export const BattleSetup = () => {
   const [userPokemonList, setUserPokemonList] = useState<PokemonData[]>([]);
@@ -15,6 +15,7 @@ export const BattleSetup = () => {
   const [startBattle, setStartBattle] = useState<boolean>(false);
   const [attacklogs, setAttacklogs] = useState<string[]>([]);
   const [turn, setTurn] = useState<"user" | "opponent">("user");
+  
   const pokemonNames = [
     "pikachu", 
     "bulbasaur",
@@ -22,15 +23,10 @@ export const BattleSetup = () => {
     "squirtle",
     "jigglypuff",
   ];
-
-  const battleLogScrollClass = `
-  max-h-100 overflow-y-auto
-  [&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:bg-primary-dark
-  [&::-webkit-scrollbar-thumb]:bg-gray-100
-  dark:[&::-webkit-scrollbar-track]:bg-primary-dark
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700
-`;
+  
+  const addLog = (log: string) => {
+   setAttacklogs((logs) => [...logs, log]);
+   };
 
   useEffect(() => {
     const fetchPokemon = async () => {
@@ -50,9 +46,6 @@ export const BattleSetup = () => {
 
   if (!userPokemonList.length || !randomPokemon) return <div>No Pokémon found.</div>;
 
- const addLog = (log: string) => {
-  setAttacklogs((logs) => [...logs, log]);
-  };
    
 const OpponentAttack = async () => {
   setDisplayPokemonHp((hp) => {
@@ -137,17 +130,6 @@ return (
         />
       </div>
     )}
-
-    <div className="text-white flex flex-col ">
-      <h1 className="text-3xl text-center">--- Battle log ---</h1>
-      <ul className={`flex flex-col h-36 w-96 overflow-y-scroll ${battleLogScrollClass} battlog`}>
-        <li>
-          The battle begins...
-        </li>
-        {attacklogs.map((log, idx) => (
-          <li key={idx}>{log}</li>
-        ))}
-      </ul>
-    </div>
+    <Battlelog attacklogs={attacklogs} />
   </main>
 )};
