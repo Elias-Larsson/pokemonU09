@@ -5,11 +5,11 @@ type Props = {
     name: string;
     color: "red" | "yellow" | "white";
     route?: string;
-    moveIndex?: number;
     onClick?: () => void;
+    disabled?: boolean;
 };
 
-export const Button = ({ name, color, route, buttonType, onClick }: Props) => {
+export const Button = ({ name, color, route, buttonType, disabled, onClick }: Props) => {
     const className =
         color === "red"
             ? "bg-primary-red hover:bg-secondary-red font-bold py-2 px-4 border-secondary-red border-b-3 border-r-3"
@@ -25,7 +25,7 @@ export const Button = ({ name, color, route, buttonType, onClick }: Props) => {
         );
     } else {
         return (
-            <button onClick={onClick} className={className}>
+            <button onClick={onClick} className={className} disabled={disabled}>
                 {name}
             </button>
         );
