@@ -16,6 +16,7 @@ export const googleSchema = new mongoose.Schema({
   profilePhoto: { type: Schema.Types.String },
   username: { type: String, default: null },
   victoryCount: { type: Number, default: 0},
+  defeatCount: { type: Number, default: 0},
 });
 
 const GoogleUser = mongoose.model("GoogleUser", googleSchema);

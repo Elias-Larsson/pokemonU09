@@ -53,13 +53,26 @@ export const BattleSetup = () => {
   setAttacklogs((logs) => [...logs, log]);
   };
    
-  const OpponentAttack = () => {
-    setDisplayPokemonHp((hp) => Math.max(0, hp - 2));
+  const OpponentAttack = async () => {
+    setDisplayPokemonHp((hp) => Math.max(0, hp - 200));
     addLog(`${randomPokemon.name} is attacking! ${displayPokemonHp}`);
-
+        if (displayPokemonHp <= 0) {
+      addLog(`You lost to ${randomPokemon.name}!`)
+      try {
+        await axios.put(
+        "http://localhost:3020/auth/defeat", // Adjust port/path as needed
+        {},
+        { withCredentials: true }
+        );
+        return;
+      } catch (err) {
+        addLog("Failed to update defeat count.");
+        console.log(err)
+      }
+    }
   }
   const UserAttack = async () => {
-    setRandomPokemonHp((hp) => Math.max(0, hp - 100));
+    setRandomPokemonHp((hp) => Math.max(0, hp - 1));
     addLog(`Attacking the random Pokémon! ${randomPokemonHp}`);
     if (randomPokemonHp <= 0) {
       addLog(`You win!`)
@@ -69,6 +82,7 @@ export const BattleSetup = () => {
         {},
         { withCredentials: true }
         );
+        return;
       } catch (err) {
         addLog("Failed to update victory count.");
         console.log(err)
