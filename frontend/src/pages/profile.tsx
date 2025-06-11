@@ -1,8 +1,10 @@
+import { BackButton } from "../components/backButton";
 import { Button } from "../components/button";
 
 export const Profile = () => {
   return (
     <div className="bg-cover bg-center h-screen flex flex-col items-center justify-center bg-[url('/homebackground.png')]">
+      <BackButton/>
       <h1 className="text-4xl font-pixel text-black mb-4">Profile</h1>
       <img src="/dragon.svg" alt="Profile Icon" className="w-40 mb-6" />
       

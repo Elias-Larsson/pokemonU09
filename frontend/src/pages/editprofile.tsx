@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "../components/button";
 import axios, { AxiosError } from "axios";
+import { BackButton } from "../components/backButton";
 
 export const EditProfile = () => {
   const [username, setUsername] = useState<string>("");
@@ -58,6 +59,7 @@ export const EditProfile = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[url('/sunsetbg.png')] bg-cover bg-center p-4">
+      <BackButton/>
       <h1 className="text-3xl font-pixel text-black mb-4">Edit Profile</h1>
       <img src="/mew.svg" alt="Edit Icon" className="w-24 mb-6" />
 
