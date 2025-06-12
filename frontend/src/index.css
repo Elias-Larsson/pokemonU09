@@ -12,3 +12,34 @@ body {
     --color-secondary-yellow: #BB8E00; 
     --color-primary-dark: #2B2B2B;
 }
+
+.hover-image {
+  display: block;
+  animation: hoverSideToSide 2s ease-in-out infinite;
+}
+
+@keyframes hoverSideToSide {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(7px); /* Move right */
+  }
+  100% {
+    transform: translateX(0); /* Back to original position */
+  }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-10px); }
+  80% { transform: translateX(10px); }
+  100% { transform: translateX(0); }
+}
+.shake {
+  animation: shake 0.4s;
+}
+
+

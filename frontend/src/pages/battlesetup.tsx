@@ -13,6 +13,8 @@ export const BattleSetup = () => {
   const [startBattle, setStartBattle] = useState<boolean>(false);
   const [attacklogs, setAttacklogs] = useState<string[]>([]);
   const [turn, setTurn] = useState<"user" | "opponent">("user");
+  const [userPokemonAnimation, setUserPokemonAnimation] = useState<"hover-image" | "shake">("hover-image");
+  const [opponentPokemonAnimation, setOpponentPokemonAnimation] = useState<"hover-image" | "shake">("hover-image");
 
   const pokemonNames = [
     "pikachu",
@@ -31,6 +33,7 @@ export const BattleSetup = () => {
       const requests = pokemonNames.map((name) =>
         getPokemonByName(URL, name)
       );
+
       const data = await Promise.all(requests);
       const requestPoke = await getPokemonByName(URL, "mewtwo");
       setUserPokemon({ data: data[0], hp: data[0].stats[0].base_stat });
@@ -43,6 +46,7 @@ export const BattleSetup = () => {
   if (!userPokemonList.length || !userPokemon || !opponentPokemon) return <div>No Pokémon found.</div>;
 
   const OpponentAttack = async () => {
+    setUserPokemonAnimation("shake");
     setUserPokemon((prev) => {
       if (!prev) return prev;
       const newHp = Math.max(0, prev.hp - 2);
@@ -59,6 +63,7 @@ export const BattleSetup = () => {
   };
 
   const UserAttack = async () => {
+    setOpponentPokemonAnimation("shake");
     setOpponentPokemon((prev) => {
       if (!prev) return prev;
       const newHp = Math.max(0, prev.hp - 20);
@@ -81,12 +86,20 @@ export const BattleSetup = () => {
     <main className="bg-primary-dark overflow-auto h-screen flex items-center justify-center flex-col">
       <div className="bg-cover bg-center w-92 h-92 flex flex-row items-end justify-between bg-[url('/battlebackground.png')]">
         <div className="flex flex-col items-center justify-center mb-2">
-          <img src={userPokemon.data.sprites.back_default} className="w-48" />
+          <img
+            src={userPokemon.data.sprites.back_default}
+            className={`w-48 ${userPokemonAnimation}`}
+            onAnimationEnd={() => setUserPokemonAnimation("hover-image")}
+          />
           <RenderLifeBar pokemon={userPokemon.data} hp={userPokemon.hp} />
         </div>
         {startBattle && (
           <div className="flex flex-col items-center mb-36">
-            <img src={opponentPokemon.data.sprites.front_default} className="w-36" />
+            <img
+              src={opponentPokemon.data.sprites.front_default}
+              className={`w-36 ${opponentPokemonAnimation}`}
+              onAnimationEnd={() => setOpponentPokemonAnimation("hover-image")}
+            />
             <RenderLifeBar pokemon={opponentPokemon.data} hp={opponentPokemon.hp} />
           </div>
         )}
@@ -110,7 +123,6 @@ export const BattleSetup = () => {
               onClick={() => {
                 setStartBattle(true);
                 setTurn("user");
-                // Reset HPs if needed
                 setUserPokemon((prev) => prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev);
                 setOpponentPokemon((prev) => prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev);
                 setAttacklogs([]);
