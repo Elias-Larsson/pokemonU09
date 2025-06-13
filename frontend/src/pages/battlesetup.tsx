@@ -4,92 +4,103 @@ import { Button } from "../components/button";
 import { UserPokemon } from "../components/pokemon";
 import type { PokemonData } from "../components/types/pokemondata";
 import { RenderLifeBar } from "../components/battlelifebar";
-import axios from "axios";
+import { Battlelog } from "../components/battlelog";
 
 export const BattleSetup = () => {
-  const [displayPokemon, setDisplayPokemon] = useState<PokemonData | null>(null);
-  const [randomPokemon, setRandomPokemon] = useState<PokemonData | null>(null);
-  const [displayPokemonHp, setDisplayPokemonHp] = useState<number>(0);
-  const [randomPokemonHp, setRandomPokemonHp] = useState<number>(0);
-  const [startBattle, setStartBattle] = useState<boolean>(false);
   const [userPokemonList, setUserPokemonList] = useState<PokemonData[]>([]);
+  const [userPokemon, setUserPokemon] = useState<{ data: PokemonData; hp: number } | null>(null);
+  const [opponentPokemon, setOpponentPokemon] = useState<{ data: PokemonData; hp: number } | null>(null);
+  const [startBattle, setStartBattle] = useState<boolean>(false);
   const [attacklogs, setAttacklogs] = useState<string[]>([]);
+  const [turn, setTurn] = useState<"user" | "opponent">("user");
+  const [userPokemonAnimation, setUserPokemonAnimation] = useState<"hover-image" | "shake">("hover-image");
+  const [opponentPokemonAnimation, setOpponentPokemonAnimation] = useState<"hover-image" | "shake">("hover-image");
+
   const pokemonNames = [
-    "pikachu", 
+    "pikachu",
     "bulbasaur",
     "charmander",
     "squirtle",
     "jigglypuff",
   ];
 
-  const battleLogScrollClass = `
-  max-h-100 overflow-y-auto
-  [&::-webkit-scrollbar]:w-2
-  [&::-webkit-scrollbar-track]:bg-primary-dark
-  [&::-webkit-scrollbar-thumb]:bg-gray-100
-  dark:[&::-webkit-scrollbar-track]:bg-primary-dark
-  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700
-`;
+  const addLog = (log: string) => {
+    setAttacklogs((logs) => [...logs, log]);
+  };
 
   useEffect(() => {
     const fetchPokemon = async () => {
       const requests = pokemonNames.map((name) =>
         getPokemonByName(URL, name)
       );
-      const requestPoke = await getPokemonByName(URL, "mewtwo");
-      setRandomPokemon(requestPoke);
-      setRandomPokemonHp(requestPoke.stats[0].base_stat);
+
       const data = await Promise.all(requests);
+      const requestPoke = await getPokemonByName(URL, "mewtwo");
+      setUserPokemon({ data: data[0], hp: data[0].stats[0].base_stat });
+      setOpponentPokemon({ data: requestPoke, hp: requestPoke.stats[0].base_stat });
       setUserPokemonList(data);
-      setDisplayPokemon(data[0]);
-      setDisplayPokemonHp(data[0].stats[0].base_stat); 
     };
     fetchPokemon();
   }, []);
 
-  if (!userPokemonList.length || !randomPokemon) return <div>No Pokémon found.</div>;
+  if (!userPokemonList.length || !userPokemon || !opponentPokemon) return <div>No Pokémon found.</div>;
 
- const addLog = (log: string) => {
-  setAttacklogs((logs) => [...logs, log]);
-  };
-   
   const OpponentAttack = async () => {
-    setDisplayPokemonHp((hp) => Math.max(0, hp - 200));
-    addLog(`${randomPokemon.name} is attacking! ${displayPokemonHp}`);
-        if (displayPokemonHp <= 0) {
-      await incrementDefeat();
-      addLog(`You lost to ${randomPokemon.name}!`)
-    }
-  }
-  const UserAttack = async () => {
-    setRandomPokemonHp((hp) => Math.max(0, hp - 2));
-    addLog(`Attacking the random Pokémon! ${randomPokemonHp}`);
-    if (randomPokemonHp <= 0) {
-      await incrementVictory();
-      addLog(`You win!`)
-    }
-    setTimeout(() => {
-      OpponentAttack()
-    }, 1000)
-
+    setUserPokemonAnimation("shake");
+    setUserPokemon((prev) => {
+      if (!prev) return prev;
+      const newHp = Math.max(0, prev.hp - 2);
+      addLog(`${opponentPokemon.data.name} is attacking! ${newHp}`);
+      if (newHp <= 0) {
+        incrementDefeat();
+        addLog(`You lost to ${opponentPokemon.data.name}!`);
+        setStartBattle(false);
+      } else {
+        setTurn("user");
+      }
+      return { ...prev, hp: newHp };
+    });
   };
 
+  const UserAttack = async () => {
+    setOpponentPokemonAnimation("shake");
+    setOpponentPokemon((prev) => {
+      if (!prev) return prev;
+      const newHp = Math.max(0, prev.hp - 20);
+      addLog(`Attacking the ${opponentPokemon.data.name} Pokémon! ${newHp}`);
+      if (newHp <= 0) {
+        incrementVictory();
+        addLog(`You win!`);
+        setStartBattle(false);
+      } else {
+        setTurn("opponent");
+        setTimeout(() => {
+          OpponentAttack();
+        }, 1000);
+      }
+      return { ...prev, hp: newHp };
+    });
+  };
 
   return (
     <main className="bg-primary-dark overflow-auto h-screen flex items-center justify-center flex-col">
       <div className="bg-cover bg-center w-92 h-92 flex flex-row items-end justify-between bg-[url('/battlebackground.png')]">
         <div className="flex flex-col items-center justify-center mb-2">
-          <>
-            <img src={displayPokemon?.sprites.back_default} className="w-48" />
-            <RenderLifeBar pokemon={displayPokemon || randomPokemon} hp={displayPokemonHp} />
-          </>
+          <img
+            src={userPokemon.data.sprites.back_default}
+            className={`w-48 ${userPokemonAnimation}`}
+            onAnimationEnd={() => setUserPokemonAnimation("hover-image")}
+          />
+          <RenderLifeBar pokemon={userPokemon.data} hp={userPokemon.hp} />
         </div>
         {startBattle && (
           <div className="flex flex-col items-center mb-36">
-            <>
-              <img src={randomPokemon?.sprites.front_default} className="w-36" />
-              <RenderLifeBar pokemon={randomPokemon} hp={randomPokemonHp} />
-            </>
+            <img
+              src={opponentPokemon.data.sprites.front_default}
+              className={`w-36 ${opponentPokemonAnimation}`}
+              onAnimationEnd={() => setOpponentPokemonAnimation("hover-image")}
+            />
+            <RenderLifeBar pokemon={opponentPokemon.data} hp={opponentPokemon.hp} />
           </div>
         )}
       </div>
@@ -98,8 +109,7 @@ export const BattleSetup = () => {
           <div className="flex flex-row gap-4 justify-center">
             {userPokemonList.map((pokemon) => (
               <button key={pokemon.name} onClick={() => {
-                setDisplayPokemon(pokemon);
-                setDisplayPokemonHp(pokemon.stats[0].base_stat);
+                setUserPokemon({ data: pokemon, hp: pokemon.stats[0].base_stat });
               }}>
                 <UserPokemon pokemon={pokemon} />
               </button>
@@ -108,38 +118,32 @@ export const BattleSetup = () => {
           <div className="flex justify-center items-center">
             <Button
               buttonType="click"
-              color="red"
+              color="yellow"
               name="Start battle"
-              onClick={() => setStartBattle(true)}
+              onClick={() => {
+                setStartBattle(true);
+                setTurn("user");
+                setUserPokemon((prev) => prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev);
+                setOpponentPokemon((prev) => prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev);
+                setAttacklogs([]);
+              }}
             />
           </div>
         </>
       )}
 
       {startBattle && (
-        <>
         <div className="flex justify-center items-center m-4">
           <Button
             buttonType="click"
             color="red"
             name="Attack"
             onClick={UserAttack}
+            disabled={turn !== "user"}
           />
         </div>
-        <div className="text-white flex flex-col ">
-        <h1 className="text-3xl text-center">--- Battle log ---</h1>
-          <ul className={`flex flex-col h-36 w-96 overflow-y-scroll ${battleLogScrollClass} battlog`}>
-              <li>
-                first attack! 10 damage... <br/>
-                ---
-              </li>
-                {attacklogs.map((log, idx) => (
-                  <li key={idx}>{log}</li>
-                ))}
-          </ul>
-        </div>
-        </>
       )}
+      <Battlelog attacklogs={attacklogs} />
     </main>
   );
 };
