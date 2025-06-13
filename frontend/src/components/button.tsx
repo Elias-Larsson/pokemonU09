@@ -12,10 +12,10 @@ type Props = {
 export const Button = ({ name, color, route, buttonType, disabled, onClick }: Props) => {
     const className =
         color === "red"
-            ? "bg-primary-red hover:bg-secondary-red font-bold py-2 px-4 border-secondary-red border-b-3 border-r-3"
+            ? "bg-primary-red hover:bg-secondary-red font-bold py-2 px-4 border-secondary-red border-b-3 border-r-3 cursor-pointer"
             : color === "yellow"
-            ? "bg-primary-yellow hover:bg-secondary-yellow font-bold py-2 px-4 border-secondary-yellow border-b-3 border-r-3"
-            : "bg-white hover:bg-gray-200 font-bold py-2 px-4 border-gray-200 border-b-3 border-r-3";
+            ? "bg-primary-yellow hover:bg-secondary-yellow font-bold py-2 px-4 border-secondary-yellow border-b-3 border-r-3 cursor-pointer"
+            : "bg-white hover:bg-gray-200 font-bold py-2 px-4 border-gray-200 border-b-3 border-r-3 cursor-pointer";
 
     if (buttonType === "link" && route) {
         return (
