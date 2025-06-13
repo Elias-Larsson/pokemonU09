@@ -5,14 +5,13 @@ export type PokemonData = {
         front_default: string;
         back_default: string;
     }
-    moves: [
-        {
-            move: {
-                name: string;
-                url: string;
-            }
-        }
-    ]
+      moves: {
+        move: {
+            name: string;
+            power: number | 0;
+            url: string;
+        };
+    }[];
     stats: [
         {
             base_stat: number;
@@ -23,3 +22,4 @@ export type PokemonData = {
         }
     ]
 };
+

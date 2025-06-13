@@ -5,6 +5,7 @@ import { UserPokemon } from "../components/pokemon";
 import type { PokemonData } from "../components/types/pokemondata";
 import { RenderLifeBar } from "../components/battlelifebar";
 import axios from "axios";
+import { damageCalculation } from "../components/battle/pokemondamage";
 
 export const BattleSetup = () => {
   const [displayPokemon, setDisplayPokemon] = useState<PokemonData | null>(null);
@@ -43,11 +44,16 @@ export const BattleSetup = () => {
       setUserPokemonList(data);
       setDisplayPokemon(data[0]);
       setDisplayPokemonHp(data[0].stats[0].base_stat); 
-    };
+      };
     fetchPokemon();
   }, []);
 
   if (!userPokemonList.length || !randomPokemon) return <div>No Pokémon found.</div>;
+
+  function getStats(index: number) {
+      if (!displayPokemon) return;
+      damageCalculation(userPokemonList[index], displayPokemon.stats);
+  }
 
  const addLog = (log: string) => {
   setAttacklogs((logs) => [...logs, log]);
@@ -62,15 +68,17 @@ export const BattleSetup = () => {
     }
   }
   const UserAttack = async () => {
-    setRandomPokemonHp((hp) => Math.max(0, hp - 2));
-    addLog(`Attacking the random Pokémon! ${randomPokemonHp}`);
-    if (randomPokemonHp <= 0) {
-      await incrementVictory();
-      addLog(`You win!`)
-    }
-    setTimeout(() => {
-      OpponentAttack()
-    }, 1000)
+
+    // console.log("Damage:", displayPokemon?.stats[2].stat.name);
+    // setRandomPokemonHp((hp) => Math.max(0, hp - 2));
+    // addLog(`Attacking the random Pokémon! ${randomPokemonHp}`);
+    // if (randomPokemonHp <= 0) {
+    //   await incrementVictory();
+    //   addLog(`You win!`)
+    // }
+    // setTimeout(() => {
+    //   OpponentAttack()
+    // }, 1000)
 
   };
 
@@ -110,7 +118,11 @@ export const BattleSetup = () => {
               buttonType="click"
               color="red"
               name="Start battle"
-              onClick={() => setStartBattle(true)}
+              onClick={() => {
+                setStartBattle(true)
+                getStats(userPokemonList.indexOf(displayPokemon!)); // titta noga
+              }
+              }
             />
           </div>
         </>

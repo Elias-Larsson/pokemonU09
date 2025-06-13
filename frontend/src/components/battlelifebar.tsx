@@ -16,5 +16,5 @@ export const RenderLifeBar = ({ pokemon, hp }: Props) => {
                 style={{ width: `${widthPercentage}%`, height: "100%" }}
             ></div>
         </div>  
-    )
+    )   
 }
