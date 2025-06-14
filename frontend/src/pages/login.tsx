@@ -9,7 +9,7 @@ export const Login = () => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        await axios.get("http://localhost:3020/api/googleUser", {
+        await axios.get("https://pokemonu09.onrender.com/api/googleUser", {
           withCredentials: true,
         });
         navigate("/home");
@@ -21,7 +21,7 @@ export const Login = () => {
   }, [navigate]);
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3020/auth/google";
+    window.location.href = "https://pokemonu09.onrender.com/auth/google";
   };
 
   return (

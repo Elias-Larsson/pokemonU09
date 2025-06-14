@@ -17,7 +17,7 @@ export const getPokemonByName = async (apiURL: string, pokemon: string) => {
 export const incrementVictory = async () => {
   try {
     await axios.put(
-      "http://localhost:3020/auth/victory",
+      "https://pokemonu09.onrender.com/auth/victory",
       {},
       { withCredentials: true }
     );
@@ -31,7 +31,7 @@ export const incrementVictory = async () => {
 export const incrementDefeat = async () => {
   try {
     await axios.put(
-      "http://localhost:3020/auth/defeat",
+      "https://pokemonu09.onrender.com/auth/defeat",
       {},
       { withCredentials: true }
     );
