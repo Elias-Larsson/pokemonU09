@@ -9,7 +9,7 @@ export const Profile = () => {
       <div className="flex flex-col text-center gap-2 w-24">
         <Button name="Pokemon" color="red" buttonType="link" route="/pokeSearch" />
         <Button name="Edit" color="white" buttonType="link" route="/editprofile" />
-        <Button name="Log" color="white" buttonType="link" route="/*" />
+        <Button name="Log" color="white" buttonType="link" route="/profileLog" />
       </div>
     </div>
   );
