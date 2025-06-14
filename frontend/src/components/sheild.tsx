@@ -13,7 +13,7 @@ export const Shield = ({ children }: ShieldProps) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("http://localhost:3020/api/googleUser", {
+        const res = await fetch("https://pokemonu09.onrender.com/api/googleUser", {
           credentials: "include",
         });
  

@@ -25,7 +25,7 @@ export const EditProfile = () => {
     if (actionType === "update") {
       try {
         await axios.put(
-          "http://localhost:3020/auth/username",
+          "http://https://pokemonu09.onrender.com/auth/username",
           { username },
           { withCredentials: true },
         );
@@ -36,7 +36,7 @@ export const EditProfile = () => {
       }
     } else if (actionType === "delete") {
       try {
-        await axios.delete("http://localhost:3020/auth/account", {
+        await axios.delete("https://pokemonu09.onrender.com/auth/account", {
           withCredentials: true,
         });
         setMessage("Account deleted.");
