@@ -62,14 +62,14 @@ app.get("/auth/google",
 app.get("/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect(process.env.CLIENT_URL!);
+    res.redirect("https://trainer-clash.vercel.app/home");
   }
 );
 
 app.get("/auth/logout", (req, res)=> {
   req.logout((err)=> {
     if (err) return next(err);
-    res.redirect(process.env.CLIENT_URL!)
+    res.redirect("https://trainer-clash.vercel.app")
   })
 })
 
