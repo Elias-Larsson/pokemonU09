@@ -8,6 +8,7 @@ import { Battle } from "./pages/battle";
 import { PokeSearch } from "./pages/pokeSearch";
 import { Login } from "./pages/login";
 import { Shield } from "./components/sheild";
+import ProfileLog from "./pages/profileLog";
 
 export const router = createBrowserRouter([
   {
@@ -66,5 +67,13 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/profileLog",
+    element: (
+      <Shield>
+        <ProfileLog />,
+      </Shield>
+    ),
   },
 ]);
