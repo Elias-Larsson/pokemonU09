@@ -62,14 +62,14 @@ app.get("/auth/google",
 app.get("/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("https://pokemon-u09-elias-larssons-projects.vercel.app");
+    res.redirect(process.env.CLIENT_URL!);
   }
 );
 
 app.get("/auth/logout", (req, res)=> {
   req.logout((err)=> {
     if (err) return next(err);
-    res.redirect("https://pokemon-u09-elias-larssons-projects.vercel.app")
+    res.redirect(process.env.CLIENT_URL!)
   })
 })
 
