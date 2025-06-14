@@ -9,7 +9,7 @@ import authRouter from './src/routes/authRouter';
 
 
 connectDB();
-const PORT = import.meta.env.PORT || 3010;
+const PORT = process.env.PORT || 3010;
 const app: Express = express();
 
 const server = http.createServer(app);
@@ -62,14 +62,14 @@ app.get("/auth/google",
 app.get("/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("http://localhost:5173");
+    res.redirect("https://pokemon-u09-gqsnlhbpg-elias-larssons-projects.vercel.app");
   }
 );
 
 app.get("/auth/logout", (req, res)=> {
   req.logout((err)=> {
     if (err) return next(err);
-    res.redirect("http://localhost:5173")
+    res.redirect("https://pokemon-u09-gqsnlhbpg-elias-larssons-projects.vercel.app")
   })
 })
 
@@ -77,7 +77,7 @@ app.get("/api/googleUser", (req, res)=>{
   if (req.isAuthenticated()){
     res.json(req.user);
   } else {
-    res.status(401).json({ error: "Unauthiruzed"})
+    res.status(401).json({ error: "unauthorized"})
   }
 });
 
