@@ -11,26 +11,39 @@ export const Shield = ({ children }: ShieldProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("https://pokemonu09.onrender.com/api/googleUser", {
-          credentials: "include",
-        });
- 
-        if (res.ok) {
-          setAuthenticated(true);
-        } else {
-          setAuthenticated(false);
-          navigate("/login");
-        }
-      } catch (error) {
-        console.error("Failed to login!", error);
-        navigate("/login");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const checkAuth = async (retries = 3, delay = 1000) => {
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const response = await fetch("https://pokemonu09.onrender.com/api/googleUser", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Accept": "application/json",
+            },
+          });
 
+          if (response.ok) {
+            setAuthenticated(true);
+            setLoading(false);
+            return;
+          } else {
+            console.warn(`Auth check failed (attempt ${attempt}): ${response.status} ${response.statusText}`);
+            if (attempt === retries) {
+              setAuthenticated(false);
+              navigate("/login");
+            }
+          }
+        } catch (error) {
+          console.error(`Auth check error (attempt ${attempt}):`, error);
+          if (attempt === retries) {
+            setAuthenticated(false);
+            navigate("/login");
+          }
+        }
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+      setLoading(false);
+    };
     checkAuth();
   }, [navigate]);
 
