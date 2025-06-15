@@ -28,7 +28,6 @@ export const Login = () => {
     <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-sm border border-gray-300 rounded-xl shadow-lg p-8 text-center">
         <h1>Log in</h1>
-
         <Button
           name="Log in with Google"
           color="red"
