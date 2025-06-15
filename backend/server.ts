@@ -65,7 +65,7 @@ app.get("/auth/google",
 );
 
 app.get("/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
+  passport.authenticate("google", { failureRedirect: "https://trainer-clash.vercel.app/login" }),
   (req, res) => {
     res.redirect("https://trainer-clash.vercel.app");
   }
