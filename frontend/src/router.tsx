@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import { SplashScreen } from "./pages/splashscreen";
 import { Profile } from "./pages/profile";
 import { Home } from "./pages/home";
@@ -13,13 +13,13 @@ import ProfileLog from "./pages/profileLog";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <SplashScreen />,
+    element: <SplashScreen />
   },
   {
     path: "/profile",
     element: (
       <Shield>
-        <Profile />,
+        <Profile />
       </Shield>
     ),
   },
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
     path: "/home",
     element: (
       <Shield>
-        <Home />,
+        <Home />
       </Shield>
     ),
   },
@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
 
     element: (
       <Shield>
-        <EditProfile />,
+        <EditProfile />
       </Shield>
     ),
   },
@@ -44,7 +44,7 @@ export const router = createBrowserRouter([
     path: "/battlesetup",
     element: (
       <Shield>
-        <BattleSetup />,
+        <BattleSetup />
       </Shield>
     ),
   },
@@ -52,7 +52,7 @@ export const router = createBrowserRouter([
     path: "/battle",
     element: (
       <Shield>
-        <Battle />,
+        <Battle />
       </Shield>
     ),
   },
@@ -60,20 +60,21 @@ export const router = createBrowserRouter([
     path: "/pokeSearch",
     element: (
       <Shield>
-        <PokeSearch />,
+        <PokeSearch />
       </Shield>
     ),
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <Login />
   },
   {
     path: "/profileLog",
     element: (
       <Shield>
-        <ProfileLog />,
+        <ProfileLog />
       </Shield>
     ),
   },
 ]);
+  
