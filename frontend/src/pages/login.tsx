@@ -9,10 +9,11 @@ export const Login = () => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-          await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/googleUser`, {
+        await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/googleUser`, {
           withCredentials: true,
         });
 
+        navigate("/home");
       } catch (error: unknown) {
         console.error("Couldnt get user");
       }
@@ -28,6 +29,7 @@ export const Login = () => {
     <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-sm border border-gray-300 rounded-xl shadow-lg p-8 text-center">
         <h1>Log in</h1>
+
         <Button
           name="Log in with Google"
           color="red"
