@@ -18,7 +18,10 @@ app.use (express.json());
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL! || "http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "https://trainer-clash.vercel.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
