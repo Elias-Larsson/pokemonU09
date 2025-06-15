@@ -11,7 +11,7 @@ const ProfileLog = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    fetch("https://pokemonu09.onrender.com/api/googleUser", {
+    fetch( `${import.meta.env.VITE_BACKEND_URL}/api/googleUser`, {
       credentials: "include",
     })
       .then((res) => res.json())

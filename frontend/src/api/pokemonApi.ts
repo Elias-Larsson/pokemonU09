@@ -17,7 +17,7 @@ export const getPokemonByName = async (apiURL: string, pokemon: string) => {
 export const incrementVictory = async () => {
   try {
     await axios.put(
-      "https://pokemonu09.onrender.com/auth/victory",
+       `${import.meta.env.VITE_BACKEND_URL}/auth/victory`,
       {},
       { withCredentials: true }
     );
