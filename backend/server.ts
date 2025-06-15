@@ -18,7 +18,7 @@ app.use (express.json());
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL! || "http://localhost:5173"],
+    origin: [ "https://trainer-clash.vercel.app/", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -64,7 +64,7 @@ app.get("/auth/google",
 app.get("/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("https://trainer-clash.vercel.app");
+    res.redirect("https://trainer-clash.vercel.app/home");
   }
 );
 
