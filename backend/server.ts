@@ -18,7 +18,7 @@ app.use (express.json());
 
 app.use(
   cors({
-    origin: [ "https://trainer-clash.vercel.app/", "http://localhost:5173"],
+    origin: [ "https://trainer-clash.vercel.app", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -44,9 +44,10 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI! }),
     cookie: {
       maxAge: 12 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
-    },
+      sameSite: "none",
+      httpOnly: true,
+      secure: true
+    },  
   })
 );
 

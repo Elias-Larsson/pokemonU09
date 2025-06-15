@@ -31,7 +31,7 @@ export const incrementVictory = async () => {
 export const incrementDefeat = async () => {
   try {
     await axios.put(
-      "https://pokemonu09.onrender.com/auth/defeat",
+      `${import.meta.env.VITE_BACKEND_URL}/auth/defeat`,
       {},
       { withCredentials: true }
     );
