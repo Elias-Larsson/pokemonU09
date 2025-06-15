@@ -25,7 +25,7 @@ export const EditProfile = () => {
     if (actionType === "update") {
       try {
         await axios.put(
-          "http://https://pokemonu09.onrender.com/auth/username",
+          "https://pokemonu09.onrender.com/auth/username",
           { username },
           { withCredentials: true },
         );
@@ -41,7 +41,7 @@ export const EditProfile = () => {
         });
         setMessage("Account deleted.");
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "/login";
         }, 1500);
       } catch (error) {
         const err = error as AxiosError<{ message: string }>;
