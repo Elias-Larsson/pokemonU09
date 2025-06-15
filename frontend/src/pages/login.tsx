@@ -9,12 +9,10 @@ export const Login = () => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        setTimeout(() => {
         axios.get("https://pokemonu09.onrender.com/api/googleUser", {
           withCredentials: true,
         });
-         }, 3000);
-       
+
         navigate("/home");
       } catch (error: unknown) {
         console.error("Couldnt get user");
