@@ -64,20 +64,18 @@ app.get("/auth/google",
 app.get("/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("https://trainer-clash.vercel.app");
+    res.redirect(process.env.CLIENT_URL!);
   }
 );
 
 app.get("/auth/logout", (req, res)=> {
   req.logout((err)=> {
     if (err) return next(err);
-    res.redirect("https://trainer-clash.vercel.app")
+    res.redirect(process.env.CLIENT_URL!)
   })
 })
 
 app.get("/api/googleUser", (req, res)=>{
-  console.log("Session:", req.session);
-  console.log("User:", req.user)
   if (req.isAuthenticated()){
     res.json(req.user);
   } else {

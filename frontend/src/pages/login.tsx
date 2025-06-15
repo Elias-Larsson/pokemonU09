@@ -9,11 +9,10 @@ export const Login = () => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        axios.get("https://pokemonu09.onrender.com/api/googleUser", {
+          await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/googleUser`, {
           withCredentials: true,
         });
 
-        navigate("/home");
       } catch (error: unknown) {
         console.error("Couldnt get user");
       }
@@ -22,7 +21,7 @@ export const Login = () => {
   }, [navigate]);
 
   const handleGoogleLogin = () => {
-    window.location.href = "https://pokemonu09.onrender.com/auth/google";
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
   };
 
   return (
