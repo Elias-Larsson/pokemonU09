@@ -30,12 +30,14 @@ export const Shield = ({ children }: ShieldProps) => {
             console.warn(`Auth check failed (attempt ${attempt}): ${response.status} ${response.statusText}`);
             if (attempt === retries) {
               setAuthenticated(false);
+              navigate("/login");
             }
           }
         } catch (error) {
           console.error(`Auth check error (attempt ${attempt}):`, error);
           if (attempt === retries) {
             setAuthenticated(false);
+            navigate("/login");
           }
         }
         await new Promise(resolve => setTimeout(resolve, delay));
