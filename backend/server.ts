@@ -15,11 +15,10 @@ const app: Express = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 app.use (express.json());
-
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: [ "https://trainer-clash.vercel.app", "http://localhost:5173"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );	
@@ -42,6 +41,11 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI! }),
+    cookie: {
+      secure: true,
+      sameSite: "none",
+      httpOnly: true,
+    }
   })
 );
 
