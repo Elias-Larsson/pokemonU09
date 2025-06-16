@@ -23,3 +23,8 @@ export type PokemonData = {
         }
     ]
 };
+
+export type damage = {
+    move1: number;
+    move2: number;
+}
