@@ -50,19 +50,17 @@ export const BattleSetup = () => {
     setAttacklogs((logs) => [...logs, log]);
   };
 
-    
-
   useEffect(() => {
     const fetchPokemon = async () => {
       const pokemons = await getPokemons(GET_POKEMONS);
       const filtered = pokemons.data.results.filter((item: { name: string }) =>
-        pokemonNames.includes(item.name)
+        pokemonNames.includes(item.name),
       );
 
       const data: PokemonData[] = await Promise.all(
         filtered.map((item: { name: string }) =>
-          getPokemonByName(URL, item.name)
-        )
+          getPokemonByName(URL, item.name),
+        ),
       );
 
       if (data.length === 0) {
@@ -72,14 +70,20 @@ export const BattleSetup = () => {
         return;
       }
 
-      const randomIndex = Math.floor(Math.random() * pokemons.data.results.length);
+      const randomIndex = Math.floor(
+        Math.random() * pokemons.data.results.length,
+      );
       console.log(randomIndex);
-      const randomOpponentIndex = Math.floor(Math.random() * data.length);
-      
+      const randomOpponent: PokemonData = await getPokemonByName(
+        URL,
+        pokemons.data.results[randomIndex].name,
+      );
+
       setUserPokemon({ data: data[0], hp: data[0].stats[0].base_stat });
+
       setOpponentPokemon({
-        data: data[randomOpponentIndex],
-        hp: data[randomOpponentIndex].stats[0].base_stat,
+        data: randomOpponent,
+        hp: randomOpponent.stats[0].base_stat,
       });
       setUserPokemonList(data);
     };
@@ -142,7 +146,7 @@ export const BattleSetup = () => {
   };
 
   return (
-    <main className="bg-primary-dark overflow-auto flex items-center justify-center flex-col">
+    <main className="h-screen bg-primary-dark overflow-auto flex items-center justify-top flex-col">
       <div className="bg-cover bg-center w-92 h-92 flex flex-row items-end justify-between bg-[url('/battlebackground.png')]">
         <div className="flex flex-col items-center justify-center mb-2">
           <img
@@ -205,7 +209,7 @@ export const BattleSetup = () => {
                   prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev,
                 );
                 const selectedIndex = userPokemonList.findIndex(
-                  (pokemon) => pokemon.name === userPokemon.data.name
+                  (pokemon) => pokemon.name === userPokemon.data.name,
                 );
                 getStats(selectedIndex);
                 setAttacklogs([]);
