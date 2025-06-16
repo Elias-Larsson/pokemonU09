@@ -71,9 +71,11 @@ app.get("/auth/logout", (req, res)=> {
 })
 
 app.get("/api/googleUser", (req, res)=>{
-  if (req.isAuthenticated()){
-    res.json(req.user);
-  } else {
+  try {
+    if(req.isAuthenticated()) {
+      res.json(req.user);
+    }
+  } catch(error: unknown) {
     res.status(401).json({ error: "unauthorized"})
   }
 });
