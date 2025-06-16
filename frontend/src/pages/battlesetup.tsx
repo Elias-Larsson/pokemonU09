@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import {
+  getPokemons,
   getPokemonByName,
   incrementDefeat,
   incrementVictory,
+  GET_POKEMONS,
   URL,
 } from "../api/pokemonApi";
 import { Button } from "../components/button";
@@ -31,7 +33,9 @@ export const BattleSetup = () => {
   const [opponentPokemonAnimation, setOpponentPokemonAnimation] = useState<
     "hover-image" | "shake"
   >("hover-image");
-  const [damage, setDamage] = useState<Awaited <ReturnType<typeof damageCalculation>> | null>(null);
+  const [damage, setDamage] = useState<Awaited<
+    ReturnType<typeof damageCalculation>
+  > | null>(null);
   const pokemonNames = [
     "pikachu",
     "bulbasaur",
@@ -46,16 +50,36 @@ export const BattleSetup = () => {
     setAttacklogs((logs) => [...logs, log]);
   };
 
+    
+
   useEffect(() => {
     const fetchPokemon = async () => {
-      const requests = pokemonNames.map((name) => getPokemonByName(URL, name));
+      const pokemons = await getPokemons(GET_POKEMONS);
+      const filtered = pokemons.data.results.filter((item: { name: string }) =>
+        pokemonNames.includes(item.name)
+      );
 
-      const data = await Promise.all(requests);
-      const requestPoke = await getPokemonByName(URL, "mewtwo");
+      const data: PokemonData[] = await Promise.all(
+        filtered.map((item: { name: string }) =>
+          getPokemonByName(URL, item.name)
+        )
+      );
+
+      if (data.length === 0) {
+        console.error("No matching Pokémon found in API results.");
+        setUserPokemonList([]);
+        setUserPokemon(null);
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * pokemons.data.results.length);
+      console.log(randomIndex);
+      const randomOpponentIndex = Math.floor(Math.random() * data.length);
+      
       setUserPokemon({ data: data[0], hp: data[0].stats[0].base_stat });
       setOpponentPokemon({
-        data: requestPoke,
-        hp: requestPoke.stats[0].base_stat,
+        data: data[randomOpponentIndex],
+        hp: data[randomOpponentIndex].stats[0].base_stat,
       });
       setUserPokemonList(data);
     };
@@ -67,7 +91,10 @@ export const BattleSetup = () => {
 
   async function getStats(index: number) {
     if (!userPokemon) return;
-    const damage = await damageCalculation(userPokemonList[index], opponentPokemon!.data);
+    const damage = await damageCalculation(
+      userPokemonList[index],
+      opponentPokemon!.data,
+    );
     setDamage(damage);
     console.log("Damage Calculation:", damage);
   }
@@ -77,7 +104,9 @@ export const BattleSetup = () => {
     setUserPokemon((prev) => {
       if (!prev) return prev;
       const newHp = Math.max(0, prev.hp - 10);
-      addLog(`${opponentPokemon.data.name} is attacking for 10 damage! ${userPokemon.data.name} has ${newHp} remaining`);
+      addLog(
+        `${opponentPokemon.data.name} is attacking for 10 damage! ${userPokemon.data.name} has ${newHp} remaining`,
+      );
       if (newHp <= 0) {
         incrementDefeat();
         addLog(`You lost to ${opponentPokemon.data.name}!`);
@@ -95,7 +124,9 @@ export const BattleSetup = () => {
     setOpponentPokemon((prev) => {
       if (!prev) return prev;
       const newHp = Math.max(0, prev.hp - damage![attackMove]);
-      addLog(`${userPokemon.data.name} is attacking for ${damage![attackMove]} damage! ${opponentPokemon.data.name} has ${newHp} remaining`);
+      addLog(
+        `${userPokemon.data.name} is attacking for ${damage![attackMove]} damage! ${opponentPokemon.data.name} has ${newHp} remaining`,
+      );
       if (newHp <= 0) {
         incrementVictory();
         addLog(`You win!`);
@@ -148,7 +179,14 @@ export const BattleSetup = () => {
                   });
                 }}
               >
-                <UserPokemon pokemon={pokemon} bgColor={pokemon.name === userPokemon.data.name ? "bg-zinc-600" : "bg-zinc-500"}/>
+                <UserPokemon
+                  pokemon={pokemon}
+                  bgColor={
+                    pokemon.name === userPokemon.data.name
+                      ? "bg-zinc-600"
+                      : "bg-zinc-500"
+                  }
+                />
               </button>
             ))}
           </div>
@@ -166,14 +204,16 @@ export const BattleSetup = () => {
                 setOpponentPokemon((prev) =>
                   prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev,
                 );
-                getStats(userPokemonList.indexOf(userPokemon.data));
+                const selectedIndex = userPokemonList.findIndex(
+                  (pokemon) => pokemon.name === userPokemon.data.name
+                );
+                getStats(selectedIndex);
                 setAttacklogs([]);
               }}
             />
           </div>
         </>
       )}
-    
 
       {startBattle && (
         <div className="flex flex-row">
