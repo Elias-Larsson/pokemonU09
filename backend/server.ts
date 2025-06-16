@@ -71,6 +71,7 @@ app.get("/auth/logout", (req, res)=> {
 })
 
 app.get("/api/googleUser", (req, res)=>{
+  console.log("req: ", req.headers);
   try {
     if(req.isAuthenticated()) {
       res.json(req.user);
