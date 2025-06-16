@@ -4,7 +4,6 @@ import { Profile } from "./pages/profile";
 import { Home } from "./pages/home";
 import { EditProfile } from "./pages/editprofile";
 import { BattleSetup } from "./pages/battlesetup";
-import { Battle } from "./pages/battle";
 import { PokeSearch } from "./pages/pokeSearch";
 import { Login } from "./pages/login";
 import { Shield } from "./components/sheild";
@@ -45,14 +44,6 @@ export const router = createBrowserRouter([
     element: (
       <Shield>
         <BattleSetup />
-      </Shield>
-    ),
-  },
-  {
-    path: "/battle",
-    element: (
-      <Shield>
-        <Battle />
       </Shield>
     ),
   },

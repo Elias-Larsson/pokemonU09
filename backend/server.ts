@@ -3,7 +3,6 @@ import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import cors from "cors";
 import connectDB from './db';
-import userRouter from './src/routes/routes';
 import "./src/middleware/oauthpassword"
 import authRouter from './src/routes/authRouter';
 
@@ -53,8 +52,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/auth", authRouter); 
-app.use("/users", userRouter);
-
 
 app.get("/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -87,9 +84,6 @@ app.use (express.json());
 app.get('/', (_, res) => {
     res.send('WebSocket server is running');
 });
-
-app.use(userRouter);
-app.use("/users", userRouter);
 
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
