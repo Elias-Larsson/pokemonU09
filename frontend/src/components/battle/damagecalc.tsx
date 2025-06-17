@@ -1,17 +1,16 @@
 import axios from "axios";
 import type { PokemonData } from "../types/pokemondata";
 
-export const damageCalculation = async (
+export const DamageCalculation = async (
   attackingPokemon: PokemonData,
   defendingPokemon: PokemonData
 ) => {
   try {
-    const attackingPokemonStats = attackingPokemon.stats;
     const attackStat =
-      attackingPokemonStats.find((stat) => stat.stat.name === "attack")
+      attackingPokemon.stats.find((stat) => stat.name === "attack")
         ?.base_stat || 50;
     const defenseStat =
-      defendingPokemon.stats.find((stat) => stat.stat.name === "defense")
+      defendingPokemon.stats.find((stat) => stat.name === "defense")
         ?.base_stat || 50;
     const move1Name = attackingPokemon.moves[0]?.move.name;
     const move2Name = attackingPokemon.moves[1]?.move.name;
