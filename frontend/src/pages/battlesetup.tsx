@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import {
+  getPokemons,
   getPokemonByName,
   incrementDefeat,
   incrementVictory,
+  GET_POKEMONS,
   URL,
 } from "../api/pokemonApi";
 import { Button } from "../components/button";
 import { UserPokemon } from "../components/pokemon";
-import type { PokemonData } from "../components/types/pokemondata";
+import type { damage, PokemonData } from "../components/types/pokemondata";
 import { RenderLifeBar } from "../components/battlelifebar";
 import { Battlelog } from "../components/battlelog";
 import { damageCalculation } from "../components/battle/damagecalc";
@@ -17,12 +19,15 @@ export const BattleSetup = () => {
   const [userPokemon, setUserPokemon] = useState<{
     data: PokemonData;
     hp: number;
+    damage?: damage;
   } | null>(null);
   const [opponentPokemon, setOpponentPokemon] = useState<{
     data: PokemonData;
     hp: number;
+    damage?: damage;
   } | null>(null);
   const [startBattle, setStartBattle] = useState<boolean>(false);
+  const [resetBattle, setResetBattle] = useState<boolean>(false);
   const [attacklogs, setAttacklogs] = useState<string[]>([]);
   const [turn, setTurn] = useState<"user" | "opponent">("user");
   const [userPokemonAnimation, setUserPokemonAnimation] = useState<
@@ -31,15 +36,18 @@ export const BattleSetup = () => {
   const [opponentPokemonAnimation, setOpponentPokemonAnimation] = useState<
     "hover-image" | "shake"
   >("hover-image");
-  const [damage, setDamage] = useState<Awaited <ReturnType<typeof damageCalculation>> | null>(null);
   const pokemonNames = [
     "pikachu",
-    "bulbasaur",
-    "charmander",
-    "squirtle",
+    "palkia",
+    "charizard",
+    "gholdengo",
     "jigglypuff",
     "chandelure",
     "arceus",
+    "Passimian",
+    "gengar",
+    "lucario",
+    "greninja",
   ];
 
   const addLog = (log: string) => {
@@ -48,40 +56,96 @@ export const BattleSetup = () => {
 
   useEffect(() => {
     const fetchPokemon = async () => {
-      const requests = pokemonNames.map((name) => getPokemonByName(URL, name));
+      const pokemons = await getPokemons(GET_POKEMONS);
+      const filtered = pokemons.data.results.filter((item: { name: string }) =>
+        pokemonNames.includes(item.name),
+      );
 
-      const data = await Promise.all(requests);
-      const requestPoke = await getPokemonByName(URL, "mewtwo");
-      setUserPokemon({ data: data[0], hp: data[0].stats[0].base_stat });
-      setOpponentPokemon({
-        data: requestPoke,
-        hp: requestPoke.stats[0].base_stat,
+      const data: PokemonData[] = await Promise.all(
+        filtered.map((item: { name: string }) =>
+          getPokemonByName(URL, item.name),
+        ),
+      );
+      
+      if (data.length === 0) {
+        console.error("No matching Pokémon found in API results.");
+        setUserPokemonList([]);
+        setUserPokemon(null);
+        return;
+      }
+
+      const randomIndex = Math.floor(
+        Math.random() * pokemons.data.results.length,
+      );
+      const randomOpponent: PokemonData = await getPokemonByName(
+        URL,
+        pokemons.data.results[randomIndex].name,
+      );
+      
+      setUserPokemon({ 
+        data: data[0],
+        hp: data[0].stats[0].base_stat, 
       });
+
+      setOpponentPokemon({
+        data: randomOpponent,
+        hp: randomOpponent.stats[0].base_stat,
+      });
+       
       setUserPokemonList(data);
     };
     fetchPokemon();
-  }, []);
+    setTurn("user");
+
+  }, [resetBattle]);
 
   if (!userPokemonList.length || !userPokemon || !opponentPokemon)
     return <div>No Pokémon found.</div>;
+  
+
 
   async function getStats(index: number) {
-    if (!userPokemon) return;
-    const damage = await damageCalculation(userPokemonList[index], opponentPokemon!.data);
-    setDamage(damage);
-    console.log("Damage Calculation:", damage);
+    if (!userPokemon || !opponentPokemon) return;
+
+    const userDamage = await damageCalculation(
+      userPokemon.data,
+      opponentPokemon.data,
+    );
+    console.log("User Damage:", userDamage);
+
+    const opponentDamage = await damageCalculation(
+      opponentPokemon.data,
+      userPokemon.data,
+    );
+    console.log("opponent Damage:", opponentDamage);
+
+    setUserPokemon({
+      ...userPokemon,
+      damage: userDamage,
+    });
+
+    setOpponentPokemon({
+      ...opponentPokemon,
+      damage: opponentDamage,
+    });
   }
 
   const OpponentAttack = async () => {
     setUserPokemonAnimation("shake");
     setUserPokemon((prev) => {
-      if (!prev) return prev;
-      const newHp = Math.max(0, prev.hp - 10);
-      addLog(`${opponentPokemon.data.name} is attacking for 10 damage! ${userPokemon.data.name} has ${newHp} remaining`);
+      if (!prev || !opponentPokemon.damage) return prev;
+      const attackMove = Math.random() < 0.5 ? "move1" : "move2";
+      const moveIndex = attackMove === "move1" ? 0 : 1;
+      const newHp = Math.max(0, prev.hp - opponentPokemon.damage[attackMove]);
+      addLog(
+        `${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${opponentPokemon.damage[attackMove]} damage! ${userPokemon.data.name} has ${newHp} remaining`,
+      );
       if (newHp <= 0) {
         incrementDefeat();
         addLog(`You lost to ${opponentPokemon.data.name}!`);
+        setResetBattle((prev) => !prev);
         setStartBattle(false);
+
       } else {
         setTurn("user");
       }
@@ -91,14 +155,17 @@ export const BattleSetup = () => {
 
   const UserAttack = async (attackMove: "move1" | "move2") => {
     setOpponentPokemonAnimation("shake");
-
     setOpponentPokemon((prev) => {
-      if (!prev) return prev;
-      const newHp = Math.max(0, prev.hp - damage![attackMove]);
-      addLog(`${userPokemon.data.name} is attacking for ${damage![attackMove]} damage! ${opponentPokemon.data.name} has ${newHp} remaining`);
+      if (!prev || !userPokemon.damage) return prev;
+      const moveIndex = attackMove === "move1" ? 0 : 1;
+      const newHp = Math.max(0, prev.hp - userPokemon.damage[attackMove]);
+      addLog(
+        `${userPokemon.data.name} used ${userPokemon.data.moves[moveIndex]?.move.name} for ${userPokemon.damage[attackMove]} damage! ${opponentPokemon.data.name} has ${newHp} remaining`,
+      );
       if (newHp <= 0) {
         incrementVictory();
         addLog(`You win!`);
+        setResetBattle((prev) => !prev); 
         setStartBattle(false);
       } else {
         setTurn("opponent");
@@ -111,11 +178,11 @@ export const BattleSetup = () => {
   };
 
   return (
-    <main className="bg-primary-dark overflow-auto flex items-center justify-center flex-col">
+    <main className="h-screen bg-primary-dark overflow-auto flex items-center justify-top flex-col">
       <div className="bg-cover bg-center w-92 h-92 flex flex-row items-end justify-between bg-[url('/battlebackground.png')]">
         <div className="flex flex-col items-center justify-center mb-2">
           <img
-            src={userPokemon.data.sprites.back_default}
+            src={userPokemon.data.sprites.back_default || userPokemon.data.sprites.front_default}
             className={`w-48 ${userPokemonAnimation}`}
             onAnimationEnd={() => setUserPokemonAnimation("hover-image")}
           />
@@ -124,7 +191,7 @@ export const BattleSetup = () => {
         {startBattle && (
           <div className="flex flex-col items-center mb-36">
             <img
-              src={opponentPokemon.data.sprites.front_default}
+              src={opponentPokemon.data.sprites.front_default || opponentPokemon.data.sprites.front_default}
               className={`w-36 ${opponentPokemonAnimation}`}
               onAnimationEnd={() => setOpponentPokemonAnimation("hover-image")}
             />
@@ -148,7 +215,14 @@ export const BattleSetup = () => {
                   });
                 }}
               >
-                <UserPokemon pokemon={pokemon} bgColor={pokemon.name === userPokemon.data.name ? "bg-zinc-600" : "bg-zinc-500"}/>
+                <UserPokemon
+                  pokemon={pokemon}
+                  bgColor={
+                    pokemon.name === userPokemon.data.name
+                      ? "bg-zinc-600"
+                      : "bg-zinc-500"
+                  }
+                />
               </button>
             ))}
           </div>
@@ -159,21 +233,16 @@ export const BattleSetup = () => {
               name="Start battle"
               onClick={() => {
                 setStartBattle(true);
-                setTurn("user");
-                setUserPokemon((prev) =>
-                  prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev,
+                const selectedIndex = userPokemonList.findIndex(
+                  (pokemon) => pokemon.name === userPokemon.data.name,
                 );
-                setOpponentPokemon((prev) =>
-                  prev ? { ...prev, hp: prev.data.stats[0].base_stat } : prev,
-                );
-                getStats(userPokemonList.indexOf(userPokemon.data));
+                getStats(selectedIndex);
                 setAttacklogs([]);
               }}
             />
           </div>
         </>
       )}
-    
 
       {startBattle && (
         <div className="flex flex-row">
