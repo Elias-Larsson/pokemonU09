@@ -120,3 +120,30 @@ export const incrementDefeat = async (req: Request, res: Response): Promise<void
     res.status(500).json({ message: "Could not increment defeat count"});
   }
 };
+
+export const getUserStats = async (req: Request, res: Response): Promise<void> => {
+  if (!req.isAuthenticated() || !req.user) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  try {
+    const userId = (req.user as googleUserType)._id;
+
+    const user = await GoogleUser.findById(userId).select("victoryCount defeatCount username profilePhoto");
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.status(200).json({
+      victoryCount: user.victoryCount,
+      defeatCount: user.defeatCount,
+      username: user.username,
+      profile: user.profilePhoto || "",
+    });
+  } catch (error) {
+      res.status(500).json({ message: "Could not retrieve user stats", error });
+  }
+};
