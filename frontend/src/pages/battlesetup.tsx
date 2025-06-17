@@ -104,7 +104,7 @@ export const BattleSetup = () => {
   
 
 
-  async function getStats(index: number) {
+  async function getStats() {
     if (!userPokemon || !opponentPokemon) return;
 
     const userDamage = await damageCalculation(
@@ -233,10 +233,7 @@ export const BattleSetup = () => {
               name="Start battle"
               onClick={() => {
                 setStartBattle(true);
-                const selectedIndex = userPokemonList.findIndex(
-                  (pokemon) => pokemon.name === userPokemon.data.name,
-                );
-                getStats(selectedIndex);
+                getStats();
                 setAttacklogs([]);
               }}
             />
