@@ -66,7 +66,7 @@ export const BattleSetup = () => {
           getPokemonByName(URL, item.name),
         ),
       );
-      
+
       if (data.length === 0) {
         console.error("No matching Pokémon found in API results.");
         setUserPokemonList([]);
@@ -81,28 +81,25 @@ export const BattleSetup = () => {
         URL,
         pokemons.data.results[randomIndex].name,
       );
-      
-      setUserPokemon({ 
+
+      setUserPokemon({
         data: data[0],
-        hp: data[0].stats[0].base_stat, 
+        hp: data[0].stats[0].base_stat,
       });
 
       setOpponentPokemon({
         data: randomOpponent,
         hp: randomOpponent.stats[0].base_stat,
       });
-       
+
       setUserPokemonList(data);
     };
     fetchPokemon();
     setTurn("user");
-
   }, [resetBattle]);
 
   if (!userPokemonList.length || !userPokemon || !opponentPokemon)
     return <div>No Pokémon found.</div>;
-  
-
 
   async function getStats() {
     if (!userPokemon || !opponentPokemon) return;
@@ -145,7 +142,6 @@ export const BattleSetup = () => {
         addLog(`You lost to ${opponentPokemon.data.name}!`);
         setResetBattle((prev) => !prev);
         setStartBattle(false);
-
       } else {
         setTurn("user");
       }
@@ -165,7 +161,7 @@ export const BattleSetup = () => {
       if (newHp <= 0) {
         incrementVictory();
         addLog(`You win!`);
-        setResetBattle((prev) => !prev); 
+        setResetBattle((prev) => !prev);
         setStartBattle(false);
       } else {
         setTurn("opponent");
@@ -182,7 +178,10 @@ export const BattleSetup = () => {
       <div className="bg-cover bg-center w-92 h-92 flex flex-row items-end justify-between bg-[url('/battlebackground.png')]">
         <div className="flex flex-col items-center justify-center mb-2">
           <img
-            src={userPokemon.data.sprites.back_default || userPokemon.data.sprites.front_default}
+            src={
+              userPokemon.data.sprites.back_default ||
+              userPokemon.data.sprites.front_default
+            }
             className={`w-48 ${userPokemonAnimation}`}
             onAnimationEnd={() => setUserPokemonAnimation("hover-image")}
           />
@@ -191,7 +190,10 @@ export const BattleSetup = () => {
         {startBattle && (
           <div className="flex flex-col items-center mb-36">
             <img
-              src={opponentPokemon.data.sprites.front_default || opponentPokemon.data.sprites.front_default}
+              src={
+                opponentPokemon.data.sprites.front_default ||
+                opponentPokemon.data.sprites.front_default
+              }
               className={`w-36 ${opponentPokemonAnimation}`}
               onAnimationEnd={() => setOpponentPokemonAnimation("hover-image")}
             />

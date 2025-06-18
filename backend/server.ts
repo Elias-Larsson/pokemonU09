@@ -1,18 +1,18 @@
 import express, { type Express } from 'express';
 import http from 'http';
-import { WebSocketServer, WebSocket } from 'ws';
 import cors from "cors";
 import connectDB from './db';
 import "./src/middleware/oauthpassword"
 import authRouter from './src/routes/authRouter';
-
+import { setupWebSocket } from './src/wss/ws';
 
 connectDB();
 const PORT = process.env.PORT || 3010;
 const app: Express = express();
 
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+setupWebSocket(server);
+
 app.use (express.json());
 app.set("trust proxy", 1);
 app.use(

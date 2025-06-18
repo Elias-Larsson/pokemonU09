@@ -8,6 +8,7 @@ import { PokeSearch } from "./pages/pokeSearch";
 import { Login } from "./pages/login";
 import { Shield } from "./components/sheild";
 import ProfileLog from "./pages/profileLog";
+import { Multiplayer } from "./pages/multiplayer";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +45,14 @@ export const router = createBrowserRouter([
     element: (
       <Shield>
         <BattleSetup />
+      </Shield>
+    ),
+  },
+   {
+    path: "/multiplayer",
+    element: (
+      <Shield>
+        <Multiplayer />
       </Shield>
     ),
   },
