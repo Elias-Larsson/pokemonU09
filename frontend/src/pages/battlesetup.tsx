@@ -8,11 +8,12 @@ import {
   URL,
 } from "../api/pokemonApi";
 import { Button } from "../components/button";
-import { UserPokemon } from "../components/pokemon";
+import { UserPokemon } from "../components/battle/pokemon";
 import type { damage, PokemonData } from "../components/types/pokemondata";
-import { RenderLifeBar } from "../components/battlelifebar";
-import { Battlelog } from "../components/battlelog";
-import { damageCalculation } from "../components/battle/damagecalc";
+import { RenderLifeBar } from "../components/battle/battlelifebar";
+import { Battlelog } from "../components/battle/battlelog";
+import { DamageCalculation } from "../components/battle/damagecalc";
+import { CriticalCalculation } from "../components/battle/criticalcalc";
 
 export const BattleSetup = () => {
   const [userPokemonList, setUserPokemonList] = useState<PokemonData[]>([]);
@@ -57,17 +58,15 @@ export const BattleSetup = () => {
   useEffect(() => {
     const fetchPokemon = async () => {
       const pokemons = await getPokemons(GET_POKEMONS);
-      const filtered = pokemons.data.results.filter((item: { name: string }) =>
-        pokemonNames.includes(item.name),
+      const filtered = pokemons.data.results
+        .map((poke: { name: string }) => poke.name)
+        .filter((name: string) => pokemonNames.includes(name));
+
+      const selectPokemons: PokemonData[] = await Promise.all(
+        filtered.map((name: string) => getPokemonByName(URL, name)),
       );
 
-      const data: PokemonData[] = await Promise.all(
-        filtered.map((item: { name: string }) =>
-          getPokemonByName(URL, item.name),
-        ),
-      );
-
-      if (data.length === 0) {
+      if (selectPokemons.length === 0) {
         console.error("No matching Pokémon found in API results.");
         setUserPokemonList([]);
         setUserPokemon(null);
@@ -83,16 +82,16 @@ export const BattleSetup = () => {
       );
 
       setUserPokemon({
-        data: data[0],
-        hp: data[0].stats[0].base_stat,
+        data: selectPokemons[0],
+        hp: selectPokemons[0].stats[0].base_stat,
       });
 
       setOpponentPokemon({
         data: randomOpponent,
         hp: randomOpponent.stats[0].base_stat,
       });
-
-      setUserPokemonList(data);
+      
+      setUserPokemonList(selectPokemons);
     };
     fetchPokemon();
     setTurn("user");
@@ -104,73 +103,98 @@ export const BattleSetup = () => {
   async function getStats() {
     if (!userPokemon || !opponentPokemon) return;
 
-    const userDamage = await damageCalculation(
+    const userDamage = await DamageCalculation(
       userPokemon.data,
       opponentPokemon.data,
     );
-    console.log("User Damage:", userDamage);
 
-    const opponentDamage = await damageCalculation(
+    const opponentDamage = await DamageCalculation(
       opponentPokemon.data,
       userPokemon.data,
     );
-    console.log("opponent Damage:", opponentDamage);
 
-    setUserPokemon({
-      ...userPokemon,
-      damage: userDamage,
-    });
+    if (
+      userPokemon.data &&
+      typeof userPokemon.hp === "number" &&
+      userDamage &&
+      opponentPokemon.data &&
+      typeof opponentPokemon.hp === "number" &&
+      opponentDamage
+    ) {
+      setUserPokemon({
+        data: userPokemon.data,
+        hp: userPokemon.hp,
+        damage: userDamage,
+      });
 
-    setOpponentPokemon({
-      ...opponentPokemon,
-      damage: opponentDamage,
-    });
+      setOpponentPokemon({
+        data: opponentPokemon.data,
+        hp: opponentPokemon.hp,
+        damage: opponentDamage,
+      });
+    }
   }
 
   const OpponentAttack = async () => {
+    if (!userPokemon || !opponentPokemon || !opponentPokemon.damage) return;
     setUserPokemonAnimation("shake");
-    setUserPokemon((prev) => {
-      if (!prev || !opponentPokemon.damage) return prev;
-      const attackMove = Math.random() < 0.5 ? "move1" : "move2";
-      const moveIndex = attackMove === "move1" ? 0 : 1;
-      const newHp = Math.max(0, prev.hp - opponentPokemon.damage[attackMove]);
+    const attackMove = Math.random() < 0.5 ? "move1" : "move2";
+    const moveIndex = attackMove === "move1" ? 0 : 1;
+    const critChance = Math.random() < 0.2;
+    const baseDamage = opponentPokemon.damage[attackMove] ?? 0;
+    const damage = (await CriticalCalculation(baseDamage, critChance)) ?? 0;
+    const newHp = Math.max(0, userPokemon.hp - damage);
+
+    if (critChance) {
       addLog(
-        `${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${opponentPokemon.damage[attackMove]} damage! ${userPokemon.data.name} has ${newHp} remaining`,
+        `Critical hit! ${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${damage} damage! ${userPokemon.data.name} has ${newHp} remaining`,
       );
-      if (newHp <= 0) {
-        incrementDefeat();
-        addLog(`You lost to ${opponentPokemon.data.name}!`);
-        setResetBattle((prev) => !prev);
-        setStartBattle(false);
-      } else {
-        setTurn("user");
-      }
-      return { ...prev, hp: newHp };
-    });
+    } else {
+      addLog(
+        `${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${damage} damage! ${userPokemon.data.name} has ${newHp} remaining`,
+      );
+    }
+    if (newHp <= 0) {
+      incrementDefeat();
+      addLog(`You lost to ${opponentPokemon.data.name}!`);
+      setResetBattle((prev) => !prev);
+      setStartBattle(false);
+    } else {
+      setTurn("user");
+    }
+    setUserPokemon({ ...userPokemon, hp: newHp });
   };
 
   const UserAttack = async (attackMove: "move1" | "move2") => {
+    if (!userPokemon || !opponentPokemon || !userPokemon.damage) return;
     setOpponentPokemonAnimation("shake");
-    setOpponentPokemon((prev) => {
-      if (!prev || !userPokemon.damage) return prev;
-      const moveIndex = attackMove === "move1" ? 0 : 1;
-      const newHp = Math.max(0, prev.hp - userPokemon.damage[attackMove]);
+    const moveIndex = attackMove === "move1" ? 0 : 1;
+    const critChance = Math.random() < 0.2;
+    const baseDamage = userPokemon.damage[attackMove] ?? 0;
+    const userDamage = (await CriticalCalculation(baseDamage, critChance)) ?? 0;
+    const newHp = Math.max(0, opponentPokemon.hp - userDamage);
+
+    if (critChance) {
       addLog(
-        `${userPokemon.data.name} used ${userPokemon.data.moves[moveIndex]?.move.name} for ${userPokemon.damage[attackMove]} damage! ${opponentPokemon.data.name} has ${newHp} remaining`,
+        `Critical hit! ${userPokemon.data.name} used ${userPokemon.data.moves[moveIndex]?.move.name} for ${userDamage} damage! ${opponentPokemon.data.name} has ${newHp} remaining`,
       );
-      if (newHp <= 0) {
-        incrementVictory();
-        addLog(`You win!`);
-        setResetBattle((prev) => !prev);
-        setStartBattle(false);
-      } else {
-        setTurn("opponent");
-        setTimeout(() => {
-          OpponentAttack();
-        }, 1000);
-      }
-      return { ...prev, hp: newHp };
-    });
+    } else {
+      addLog(
+        `${userPokemon.data.name} used ${userPokemon.data.moves[moveIndex]?.move.name} for ${userDamage} damage! ${opponentPokemon.data.name} has ${newHp} remaining`,
+      );
+    }
+    if (newHp <= 0) {
+      incrementVictory();
+      addLog(`You win!`);
+      setResetBattle((prev) => !prev);
+      setStartBattle(false);
+    } else {
+      setTurn("opponent");
+      setTimeout(() => {
+        OpponentAttack();
+      }, 1000);
+    }
+    setOpponentPokemon({ ...opponentPokemon, hp: newHp });
   };
 
   return (
