@@ -67,6 +67,7 @@ export const BattleSetup = () => {
       );
 
       if (selectPokemons.length === 0) {
+        console.error("No matching Pokémon found in API results.");
         setUserPokemonList([]);
         setUserPokemon(null);
         return;
@@ -89,7 +90,7 @@ export const BattleSetup = () => {
         data: randomOpponent,
         hp: randomOpponent.stats[0].base_stat,
       });
-
+      
       setUserPokemonList(selectPokemons);
     };
     fetchPokemon();
