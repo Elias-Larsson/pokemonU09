@@ -32,10 +32,10 @@ export const BattleSetup = () => {
   const [attacklogs, setAttacklogs] = useState<string[]>([]);
   const [turn, setTurn] = useState<"user" | "opponent">("user");
   const [userPokemonAnimation, setUserPokemonAnimation] = useState<
-    "hover-image" | "shake"
+    "hover-image" | "shake" | "death"
   >("hover-image");
   const [opponentPokemonAnimation, setOpponentPokemonAnimation] = useState<
-    "hover-image" | "shake"
+    "hover-image" | "shake" | "death"
   >("hover-image");
   const pokemonNames = [
     "pikachu",
@@ -147,18 +147,22 @@ export const BattleSetup = () => {
 
     if (critChance) {
       addLog(
-        `Critical hit! ${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${damage} damage! ${userPokemon.data.name} has ${newHp} remaining`,
+        `Critical hit! ${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${damage} damage! ${userPokemon.data.name} has ${newHp} remaining hp`,
       );
     } else {
       addLog(
-        `${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${damage} damage! ${userPokemon.data.name} has ${newHp} remaining`,
+        `${opponentPokemon.data.name} used ${opponentPokemon.data.moves[moveIndex]?.move.name} for ${damage} damage! ${userPokemon.data.name} has ${newHp} remaining hp`,
       );
     }
     if (newHp <= 0) {
-      incrementDefeat();
-      addLog(`You lost to ${opponentPokemon.data.name}!`);
-      setResetBattle((prev) => !prev);
-      setStartBattle(false);
+      setUserPokemonAnimation("death");
+      setTimeout(() => {
+        incrementDefeat();
+        addLog(`You lost to ${opponentPokemon.data.name}!`);
+        setResetBattle((prev) => !prev);
+        setStartBattle(false);
+        setUserPokemonAnimation("hover-image");
+      }, 1000); 
     } else {
       setTurn("user");
     }
@@ -167,13 +171,12 @@ export const BattleSetup = () => {
 
   const UserAttack = async (attackMove: "move1" | "move2") => {
     if (!userPokemon || !opponentPokemon || !userPokemon.damage) return;
-    setOpponentPokemonAnimation("shake");
     const moveIndex = attackMove === "move1" ? 0 : 1;
     const critChance = Math.random() < 0.2;
     const baseDamage = userPokemon.damage[attackMove] ?? 0;
     const userDamage = (await CriticalCalculation(baseDamage, critChance)) ?? 0;
     const newHp = Math.max(0, opponentPokemon.hp - userDamage);
-
+    setOpponentPokemonAnimation("shake");
     if (critChance) {
       addLog(
         `Critical hit! ${userPokemon.data.name} used ${userPokemon.data.moves[moveIndex]?.move.name} for ${userDamage} damage! ${opponentPokemon.data.name} has ${newHp} remaining`,
@@ -184,10 +187,14 @@ export const BattleSetup = () => {
       );
     }
     if (newHp <= 0) {
-      incrementVictory();
-      addLog(`You win!`);
-      setResetBattle((prev) => !prev);
-      setStartBattle(false);
+      setOpponentPokemonAnimation("death");
+      setTimeout(() => {
+        incrementVictory();
+        addLog(`You win!`);
+        setResetBattle((prev) => !prev);
+        setStartBattle(false);
+        setOpponentPokemonAnimation("hover-image");
+      }, 1000);
     } else {
       setTurn("opponent");
       setTimeout(() => {
