@@ -23,10 +23,10 @@ body {
     transform: translateX(0);
   }
   50% {
-    transform: translateX(7px); /* Move right */
+    transform: translateX(7px);
   }
   100% {
-    transform: translateX(0); /* Back to original position */
+    transform: translateX(0);
   }
 }
 
@@ -42,4 +42,18 @@ body {
   animation: shake 0.4s;
 }
 
+@keyframes deathFade {
+  0% { opacity: 1; transform: scale(1);}
+  100% { opacity: 0; transform: scale(0.7);}
+}
+.death {
+  animation: deathFade 1s forwards;
+}
 
+.green-lifebar-animation {
+  transition: width 0.5s ease-in-out;
+}
+.red-lifebar-animation {
+  transition: width 0.5s ease-in-out;
+  transition-delay: 0.2s;
+}
