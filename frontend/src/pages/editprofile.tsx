@@ -60,6 +60,7 @@ export const EditProfile = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-[url('/sunsetbg.png')] bg-cover bg-center p-4">
       <h1 className="text-3xl font-pixel text-black mb-4">Edit Profile</h1>
       <img src="/mew.svg" alt="Edit Icon" className="w-24 mb-6" />
+      <p>Username required for multiplayer</p>
 
       <input
         type="text"

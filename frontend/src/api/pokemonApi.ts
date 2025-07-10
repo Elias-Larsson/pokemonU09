@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 export const URL = "https://pokeapi.co/api/v2/pokemon";
 export const GET_POKEMONS = `${URL}?limit=1350`;
@@ -41,3 +42,16 @@ export const incrementDefeat = async () => {
     throw err;
   }
 }; 
+
+export const getPlayerData = async () => {
+  try{
+      const data = await axios.get(
+       `${import.meta.env.VITE_BACKEND_URL}/api/googleUser`,
+        { withCredentials: true });
+      
+      return data;
+  } catch (err) {
+    console.log("failed to fetch player data:", err)
+    throw err;
+  }
+}
